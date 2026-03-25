@@ -1,0 +1,215 @@
+<!-- AI Chatbox Widget -->
+<div id="chatbox-container">
+    <!-- Toggle Button -->
+    <button id="chatbox-toggle" class="chatbox-toggle-btn" title="Trợ lý thời trang AI">
+        <i class="fas fa-comments" id="chatbox-icon-open"></i>
+        <i class="fas fa-times" id="chatbox-icon-close" style="display:none"></i>
+        <span class="chatbox-badge" id="chatbox-badge" style="display:none">1</span>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatbox-window" class="chatbox-window" style="display:none">
+        <!-- Header -->
+        <div class="chatbox-header">
+            <div class="d-flex align-items-center">
+                <div class="chatbox-avatar me-2">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-white fw-bold">Trợ lý Thời Trang AI</h6>
+                    <small class="text-white-50"><i class="fas fa-circle text-success me-1" style="font-size:0.5rem"></i>Online</small>
+                </div>
+            </div>
+            <button class="chatbox-close-btn" id="chatbox-close">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chatbox-messages" id="chatbox-messages">
+            <!-- Welcome Message -->
+            <div class="chatbox-msg chatbox-msg-bot">
+                <div class="chatbox-msg-avatar"><i class="fas fa-robot"></i></div>
+                <div class="chatbox-msg-content">
+                    <p>Xin chào <strong><%= typeof user !== 'undefined' && user ? user.ho_ten.split(' ').pop() : 'bạn' %></strong>! 👋</p>
+                    <p>Mình là trợ lý thời trang AI. Mình có thể giúp bạn:</p>
+                    <div class="chatbox-quick-actions">
+                        <button class="chatbox-quick-btn" data-msg="Gợi ý sản phẩm cho tôi">🛍️ Gợi ý sản phẩm</button>
+                        <button class="chatbox-quick-btn" data-msg="Gợi ý size cho tôi">📏 Gợi ý size</button>
+                        <button class="chatbox-quick-btn" data-msg="Xu hướng thời trang hot">🔥 Xu hướng hot</button>
+                        <button class="chatbox-quick-btn" data-msg="Tư vấn phối đồ">👗 Phối đồ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chatbox-input-area">
+            <form id="chatbox-form" autocomplete="off">
+                <div class="input-group">
+                    <input type="text" id="chatbox-input" class="form-control" placeholder="Hỏi về thời trang, sản phẩm, size..." maxlength="500" autofocus>
+                    <button type="submit" class="btn chatbox-send-btn" id="chatbox-send">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const chatToggle = document.getElementById('chatbox-toggle');
+    const chatWindow = document.getElementById('chatbox-window');
+    const chatClose = document.getElementById('chatbox-close');
+    const chatForm = document.getElementById('chatbox-form');
+    const chatInput = document.getElementById('chatbox-input');
+    const chatMessages = document.getElementById('chatbox-messages');
+    const iconOpen = document.getElementById('chatbox-icon-open');
+    const iconClose = document.getElementById('chatbox-icon-close');
+    const badge = document.getElementById('chatbox-badge');
+    let isOpen = false;
+
+    // Toggle chat window
+    function toggleChat() {
+        isOpen = !isOpen;
+        chatWindow.style.display = isOpen ? 'flex' : 'none';
+        iconOpen.style.display = isOpen ? 'none' : 'inline';
+        iconClose.style.display = isOpen ? 'inline' : 'none';
+        badge.style.display = 'none';
+        if (isOpen) {
+            chatInput.focus();
+            scrollToBottom();
+        }
+    }
+
+    chatToggle.addEventListener('click', toggleChat);
+    chatClose.addEventListener('click', toggleChat);
+
+    // Scroll to bottom
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Format text (simple markdown)
+    function formatText(text) {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="chatbox-link">$1</a>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // Render product cards
+    function renderProducts(products) {
+        if (!products || products.length === 0) return '';
+        let html = '<div class="chatbox-products">';
+        products.forEach(function(p) {
+            const price = Number(p.gia_ban).toLocaleString('vi-VN');
+            const img = p.hinh_anh && p.hinh_anh.startsWith('http')
+                ? p.hinh_anh
+                : (p.hinh_anh || 'https://via.placeholder.com/150?text=No+Image');
+            html += '<a href="/san-pham-chi-tiet/' + p.id + '" class="chatbox-product-card">' +
+                '<img src="' + img + '" alt="' + (p.ten_sp || '').replace(/"/g, '&quot;') + '">' +
+                '<div class="chatbox-product-info">' +
+                '<div class="chatbox-product-name">' + (p.ten_sp || '') + '</div>' +
+                '<div class="chatbox-product-price">' + price + 'đ</div>' +
+                '</div></a>';
+        });
+        html += '</div>';
+        return html;
+    }
+
+    // Add message to chat
+    function addMessage(content, isUser, products) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chatbox-msg ' + (isUser ? 'chatbox-msg-user' : 'chatbox-msg-bot');
+
+        let inner = '';
+        if (!isUser) {
+            inner += '<div class="chatbox-msg-avatar"><i class="fas fa-robot"></i></div>';
+        }
+        inner += '<div class="chatbox-msg-content">';
+        inner += isUser ? '<p>' + content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>'
+                        : '<p>' + formatText(content) + '</p>';
+        if (products && products.length > 0) {
+            inner += renderProducts(products);
+        }
+        inner += '</div>';
+
+        msgDiv.innerHTML = inner;
+        chatMessages.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    // Add typing indicator
+    function addTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chatbox-msg chatbox-msg-bot chatbox-typing';
+        typingDiv.id = 'chatbox-typing';
+        typingDiv.innerHTML = '<div class="chatbox-msg-avatar"><i class="fas fa-robot"></i></div>' +
+            '<div class="chatbox-msg-content"><div class="chatbox-dots"><span></span><span></span><span></span></div></div>';
+        chatMessages.appendChild(typingDiv);
+        scrollToBottom();
+    }
+
+    function removeTyping() {
+        const el = document.getElementById('chatbox-typing');
+        if (el) el.remove();
+    }
+
+    // Send message
+    async function sendMessage(message) {
+        if (!message.trim()) return;
+
+        addMessage(message, true);
+        chatInput.value = '';
+        chatInput.disabled = true;
+        addTyping();
+
+        try {
+            const response = await fetch('/api/chatbox', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            const data = await response.json();
+            removeTyping();
+
+            if (data.success) {
+                addMessage(data.reply, false, data.products);
+            } else {
+                addMessage(data.reply || 'Có lỗi xảy ra, thử lại nhé!', false);
+            }
+        } catch (err) {
+            removeTyping();
+            addMessage('⚠️ Không thể kết nối. Vui lòng thử lại sau.', false);
+        }
+
+        chatInput.disabled = false;
+        chatInput.focus();
+    }
+
+    // Form submit
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage(chatInput.value);
+    });
+
+    // Quick action buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('chatbox-quick-btn') || e.target.closest('.chatbox-quick-btn')) {
+            const btn = e.target.classList.contains('chatbox-quick-btn') ? e.target : e.target.closest('.chatbox-quick-btn');
+            const msg = btn.getAttribute('data-msg');
+            if (msg) sendMessage(msg);
+        }
+    });
+
+    // Show badge after 3 seconds if not opened
+    setTimeout(function() {
+        if (!isOpen) {
+            badge.style.display = 'flex';
+        }
+    }, 3000);
+})();
+</script>

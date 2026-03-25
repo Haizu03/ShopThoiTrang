@@ -1,0 +1,109 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="fas fa-truck me-2"></i>Danh sách phiếu nhập hàng</h5>
+    <a href="/nhap-hang/tao" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Tạo phiếu nhập</a>
+</div>
+
+<!-- Thống kê -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-3">
+                <div class="h4 mb-0 text-primary"><%= stats.tong_phieu %></div>
+                <small class="text-muted">Tổng phiếu nhập</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-3">
+                <div class="h4 mb-0 text-success"><%= Number(stats.tong_gia_tri).toLocaleString('vi-VN') %>đ</div>
+                <small class="text-muted">Tổng giá trị nhập</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center">
+            <div class="card-body py-3">
+                <div class="h4 mb-0 text-info"><%= stats.phieu_thang_nay %></div>
+                <small class="text-muted">Phiếu tháng này</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tìm kiếm -->
+<div class="table-container mb-3">
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Mã phiếu, nhà cung cấp ..." value="<%= search %>">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Tìm</button>
+        </div>
+        <% if (search) { %>
+        <div class="col-md-2">
+            <a href="/nhap-hang" class="btn btn-outline-secondary w-100"><i class="fas fa-times me-1"></i>Xóa lọc</a>
+        </div>
+        <% } %>
+    </form>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Mã phiếu</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Nhân viên nhập</th>
+                    <th class="text-center">Số SP</th>
+                    <th>Tổng tiền</th>
+                    <th>Ngày nhập</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (phieuNhaps.length > 0) { %>
+                    <% phieuNhaps.forEach(pn => { %>
+                        <tr>
+                            <td><a href="/nhap-hang/<%= pn.id %>"><strong><%= pn.ma_phieu %></strong></a></td>
+                            <td><%= pn.nha_cung_cap || '---' %></td>
+                            <td><%= pn.ten_nv || '---' %></td>
+                            <td class="text-center"><span class="badge bg-secondary"><%= pn.so_san_pham %></span></td>
+                            <td class="price"><%= Number(pn.tong_tien).toLocaleString('vi-VN') %>đ</td>
+                            <td><%= new Date(pn.ngay_nhap).toLocaleDateString('vi-VN') %></td>
+                            <td>
+                                <a href="/nhap-hang/<%= pn.id %>" class="btn btn-sm btn-info btn-action" title="Chi tiết">
+                                    <i class="fas fa-eye text-white"></i>
+                                </a>
+                                <button onclick="confirmDelete('/nhap-hang/xoa/<%= pn.id %>', '<%= pn.ma_phieu %>')" class="btn btn-sm btn-danger btn-action" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr><td colspan="7" class="text-center text-muted py-4">Chưa có phiếu nhập</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <% if (totalPages > 1) { %>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item <%= currentPageNum <= 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="/nhap-hang?page=<%= currentPageNum - 1 %>&search=<%= search %>"><i class="fas fa-chevron-left"></i></a>
+            </li>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPageNum === i ? 'active' : '' %>">
+                    <a class="page-link" href="/nhap-hang?page=<%= i %>&search=<%= search %>"><%= i %></a>
+                </li>
+            <% } %>
+            <li class="page-item <%= currentPageNum >= totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="/nhap-hang?page=<%= currentPageNum + 1 %>&search=<%= search %>"><i class="fas fa-chevron-right"></i></a>
+            </li>
+        </ul>
+    </nav>
+    <% } %>
+</div>

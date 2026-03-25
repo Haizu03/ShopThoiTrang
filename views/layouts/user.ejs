@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Thời Trang - <%= typeof pageTitle !== 'undefined' ? pageTitle : 'Trang chủ' %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/user.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark user-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/trang-chu">
+                <i class="fas fa-tshirt me-2"></i>Shop Thời Trang
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUser">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarUser">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'trang-chu' ? 'active' : '' %>" href="/trang-chu">
+                            <i class="fas fa-home me-1"></i>Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'cua-hang' ? 'active' : '' %>" href="/cua-hang">
+                            <i class="fas fa-store me-1"></i>Cửa hàng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'don-hang' ? 'active' : '' %>" href="/don-hang-cua-toi">
+                            <i class="fas fa-clipboard-list me-1"></i>Đơn hàng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <%= typeof currentPage !== 'undefined' && currentPage === 'lien-he' ? 'active' : '' %>" href="/lien-he-user">
+                            <i class="fas fa-headset me-1"></i>Liên hệ
+                        </a>
+                    </li>
+                    <% if (typeof user !== 'undefined' && user && user.vai_tro === 'admin') { %>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" href="/dashboard">
+                            <i class="fas fa-cogs me-1"></i>Quản trị
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item me-2">
+                        <a class="nav-link position-relative <%= typeof currentPage !== 'undefined' && currentPage === 'gio-hang' ? 'active' : '' %>" href="/gio-hang">
+                            <i class="fas fa-shopping-cart"></i>
+                            <% const cartCount = typeof locals !== 'undefined' && typeof locals.session !== 'undefined' ? 0 : 0; %>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <%= typeof user !== 'undefined' && user ? user.ho_ten : '' %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/thong-tin"><i class="fas fa-user me-2"></i>Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="/don-hang-cua-toi"><i class="fas fa-clipboard-list me-2"></i>Đơn hàng của tôi</a></li>
+                            <li><a class="dropdown-item" href="/doi-mat-khau"><i class="fas fa-key me-2"></i>Đổi mật khẩu</a></li>
+                            <% if (typeof user !== 'undefined' && user && user.vai_tro === 'admin') { %>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Trang quản trị</a></li>
+                            <% } %>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/dang-xuat"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="user-content">
+        <div class="container py-4">
+            <% if (typeof messages !== 'undefined') { %>
+                <% if (messages.success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= messages.success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                <% if (messages.error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= messages.error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+            <% } %>
+            <%- body %>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="user-footer">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2026 Shop Thời Trang. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- AI Chatbox -->
+    <%- include('../partials/chatbox') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

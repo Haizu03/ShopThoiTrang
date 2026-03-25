@@ -1,0 +1,79 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5><i class="fas fa-ticket-alt me-2"></i><%= maGiamGia ? 'Sửa' : 'Tạo' %> mã giảm giá</h5>
+                <a href="/ma-giam-gia" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+            </div>
+
+            <form action="/ma-giam-gia/<%= maGiamGia ? 'sua/' + maGiamGia.id : 'tao' %>" method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mã code <span class="text-danger">*</span></label>
+                        <input type="text" name="ma_code" class="form-control text-uppercase font-monospace" 
+                            value="<%= maGiamGia ? maGiamGia.ma_code : '' %>" required placeholder="VD: SALE50K"
+                            style="letter-spacing: 2px; font-weight: 700;">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <input type="text" name="mo_ta" class="form-control" value="<%= maGiamGia ? maGiamGia.mo_ta || '' : '' %>" placeholder="Mô tả ngắn">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Loại giảm giá <span class="text-danger">*</span></label>
+                        <select name="loai_giam" class="form-select" id="loaiGiam" onchange="updateLabel()">
+                            <option value="phan_tram" <%= maGiamGia && maGiamGia.loai_giam === 'phan_tram' ? 'selected' : '' %>>Phần trăm (%)</option>
+                            <option value="co_dinh" <%= maGiamGia && maGiamGia.loai_giam === 'co_dinh' ? 'selected' : '' %>>Cố định (VNĐ)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label" id="labelGiaTri">Giá trị giảm <span class="text-danger">*</span></label>
+                        <input type="number" name="gia_tri" class="form-control" value="<%= maGiamGia ? maGiamGia.gia_tri : '' %>" required min="1" step="any">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Đơn tối thiểu (VNĐ)</label>
+                        <input type="number" name="don_toi_thieu" class="form-control" value="<%= maGiamGia ? maGiamGia.don_toi_thieu : 0 %>" min="0">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" name="so_luong" class="form-control" value="<%= maGiamGia ? maGiamGia.so_luong : 100 %>" min="1">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input type="date" name="ngay_bat_dau" class="form-control" value="<%= maGiamGia && maGiamGia.ngay_bat_dau ? new Date(maGiamGia.ngay_bat_dau).toISOString().split('T')[0] : new Date().toISOString().split('T')[0] %>">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày kết thúc</label>
+                        <input type="date" name="ngay_ket_thuc" class="form-control" value="<%= maGiamGia && maGiamGia.ngay_ket_thuc ? new Date(maGiamGia.ngay_ket_thuc).toISOString().split('T')[0] : '' %>">
+                    </div>
+                </div>
+
+                <% if (maGiamGia) { %>
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="trang_thai" id="trangThai" <%= maGiamGia.trang_thai ? 'checked' : '' %>>
+                        <label class="form-check-label" for="trangThai">Kích hoạt mã giảm giá</label>
+                    </div>
+                </div>
+                <% } %>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i><%= maGiamGia ? 'Cập nhật' : 'Tạo mã giảm giá' %></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateLabel() {
+    const loai = document.getElementById('loaiGiam').value;
+    document.getElementById('labelGiaTri').innerHTML = loai === 'phan_tram' 
+        ? 'Giá trị giảm (%) <span class="text-danger">*</span>' 
+        : 'Giá trị giảm (VNĐ) <span class="text-danger">*</span>';
+}
+updateLabel();
+</script>

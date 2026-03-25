@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Đồ án Cơ sở - Xây dựng Website Quản Lý Shop Thời Trang</title>
+    <style>
+        @page { size: A4; margin: 2.5cm 2cm 2cm 3cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 13pt;
+            line-height: 1.5;
+            color: #000;
+            background: #e8e8e8;
+        }
+        .page {
+            width: 21cm; margin: 20px auto; padding: 2.5cm 2cm 2cm 3cm;
+            background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 29.7cm; position: relative;
+        }
+        .page-break { page-break-after: always; }
+
+        /* Cover page */
+        .cover { text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 25cm; }
+        .cover .university { font-size: 14pt; font-weight: bold; text-transform: uppercase; margin-top: 0; }
+        .cover .faculty { font-size: 14pt; font-weight: bold; text-transform: uppercase; }
+        .cover .line { width: 120px; height: 2px; background: #000; margin: 10px auto; }
+        .cover .student-info { font-size: 14pt; margin-top: 40px; text-align: left; display: inline-block; }
+        .cover .title-box { margin-top: 50px; }
+        .cover .title-label { font-size: 18pt; font-weight: bold; text-transform: uppercase; }
+        .cover .title-name { font-size: 20pt; font-weight: bold; text-transform: uppercase; color: #000; margin-top: 15px; }
+        .cover .subject { font-size: 16pt; font-weight: bold; text-transform: uppercase; margin-top: 40px; }
+        .cover .major { font-size: 13pt; margin-top: 10px; }
+        .cover .advisor { font-size: 13pt; margin-top: 30px; }
+        .cover .date { font-size: 13pt; margin-top: auto; padding-bottom: 20px; }
+
+        /* Chapter headings */
+        h1.chapter { font-size: 16pt; font-weight: bold; text-transform: uppercase; text-align: center; margin: 30px 0 20px; page-break-before: always; }
+        h1.chapter:first-of-type { page-break-before: auto; }
+        h2 { font-size: 14pt; font-weight: bold; margin: 20px 0 10px; }
+        h3 { font-size: 13pt; font-weight: bold; margin: 15px 0 8px; font-style: italic; }
+        h4 { font-size: 13pt; font-weight: bold; margin: 10px 0 5px; }
+
+        p { text-indent: 1.27cm; text-align: justify; margin-bottom: 8px; }
+        p.no-indent { text-indent: 0; }
+        ul, ol { margin-left: 2cm; margin-bottom: 10px; }
+        li { margin-bottom: 4px; text-align: justify; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 10px 0 15px; font-size: 12pt; }
+        table th, table td { border: 1px solid #000; padding: 5px 8px; text-align: left; vertical-align: top; }
+        table th { background: #f0f0f0; font-weight: bold; text-align: center; }
+        table caption { font-weight: bold; font-style: italic; margin-bottom: 5px; text-align: center; }
+
+        .toc { margin: 20px 0; }
+        .toc-item { display: flex; justify-content: space-between; padding: 3px 0; }
+        .toc-item.level1 { font-weight: bold; margin-top: 8px; }
+        .toc-item.level2 { padding-left: 1cm; }
+        .toc-item.level3 { padding-left: 2cm; font-style: italic; }
+        .toc-dots { flex: 1; border-bottom: 1px dotted #999; margin: 0 5px; min-width: 30px; align-self: flex-end; margin-bottom: 5px; }
+
+        .figure { text-align: center; margin: 15px 0; }
+        .figure img { max-width: 100%; border: 1px solid #ccc; }
+        .figure-caption { font-style: italic; font-weight: bold; margin-top: 5px; font-size: 12pt; }
+
+        .signature-block { margin-top: 40px; text-align: right; width: 60%; margin-left: auto; }
+        .signature-block .date { font-style: italic; }
+        .signature-block .name { font-weight: bold; margin-top: 60px; }
+
+        .ref-list li { margin-bottom: 8px; }
+
+        @media print {
+            body { background: white; }
+            .page { box-shadow: none; margin: 0; width: auto; padding: 0; }
+            .no-print { display: none !important; }
+        }
+
+        .print-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 12px 30px;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .print-bar button {
+            padding: 8px 20px; border: 2px solid white; border-radius: 6px;
+            background: transparent; color: white; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .print-bar button:hover { background: rgba(255,255,255,0.2); }
+        .print-bar h3 { margin: 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+    <h3>&#128218; Báo cáo Đồ án Cơ sở</h3>
+    <button onclick="window.print()">&#128424; In / Xuất PDF</button>
+    <span style="margin-left:auto;font-size:12px;opacity:0.8">Mở trình duyệt → Ctrl+P → Save as PDF</span>
+</div>
+
+<!-- ==================== TRANG BÌA ==================== -->
+<div class="page page-break">
+    <div class="cover">
+        <p class="university" style="text-indent:0">TRƯỜNG ĐẠI HỌC NAM CẦN THƠ</p>
+        <p class="faculty" style="text-indent:0">KHOA CÔNG NGHỆ THÔNG TIN</p>
+        <div class="line"></div>
+
+        <div class="student-info">
+            <p style="text-indent:0"><b>Sinh viên:</b> ..................................</p>
+            <p style="text-indent:0"><b>MSSV:</b> ..................................</p>
+            <p style="text-indent:0"><b>Lớp:</b> ..................................</p>
+        </div>
+
+        <div class="title-box">
+            <p class="subject" style="text-indent:0">ĐỒ ÁN CƠ SỞ</p>
+            <p class="title-label" style="text-indent:0;margin-top:20px;">TÊN ĐỀ TÀI</p>
+            <p class="title-name" style="text-indent:0">XÂY DỰNG WEBSITE<br>QUẢN LÝ SHOP THỜI TRANG</p>
+        </div>
+
+        <div class="major">
+            <p style="text-indent:0">Ngành: Công Nghệ Thông Tin</p>
+            <p style="text-indent:0">Mã số ngành: 7480201</p>
+        </div>
+
+        <div class="advisor">
+            <p style="text-indent:0"><b>CÁN BỘ HƯỚNG DẪN</b></p>
+            <p style="text-indent:0">..................................</p>
+        </div>
+
+        <div class="date">
+            <p style="text-indent:0">Tháng 3/2026</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== LỜI CẢM TẠ ==================== -->
+<div class="page page-break">
+    <h1 class="chapter" style="page-break-before:auto">LỜI CẢM TẠ</h1>
+    <p>Trong quá trình thực hiện đồ án cơ sở "Xây dựng Website Quản Lý Shop Thời Trang", em đã nhận được rất nhiều sự hỗ trợ và giúp đỡ từ nhiều phía.</p>
+    <p>Trước hết, em xin gửi lời cảm ơn chân thành nhất đến quý Thầy/Cô trong Khoa Công nghệ Thông tin, Trường Đại học Nam Cần Thơ đã tận tình giảng dạy, truyền đạt kiến thức nền tảng về lập trình web, cơ sở dữ liệu và phân tích thiết kế hệ thống trong suốt thời gian qua.</p>
+    <p>Đặc biệt, em xin cảm ơn Thầy/Cô hướng dẫn đã dành thời gian quý báu để hướng dẫn, góp ý và định hướng cho em trong suốt quá trình thực hiện đồ án này.</p>
+    <p>Mặc dù đã cố gắng hết sức, nhưng do kiến thức và kinh nghiệm còn hạn chế, đồ án không thể tránh khỏi những thiếu sót. Em rất mong nhận được sự góp ý từ quý Thầy/Cô để đồ án được hoàn thiện hơn.</p>
+    <p>Xin trân trọng cảm ơn!</p>
+    <div class="signature-block">
+        <p class="date" style="text-indent:0">Cần Thơ, ngày ... tháng 3 năm 2026</p>
+        <p style="text-indent:0;font-weight:bold">Người thực hiện</p>
+        <p class="name" style="text-indent:0">(Ký tên)</p>
+    </div>
+</div>
+
+<!-- ==================== LỜI CAM KẾT ==================== -->
+<div class="page page-break">
+    <h1 class="chapter" style="page-break-before:auto">LỜI CAM KẾT</h1>
+    <p>Tôi xin cam kết đồ án "Xây dựng Website Quản Lý Shop Thời Trang" này là kết quả nghiên cứu, thiết kế và lập trình do chính tôi thực hiện, dựa trên nền tảng kiến thức được học cùng với quá trình tự tìm hiểu, nghiên cứu thêm từ các tài liệu và nguồn thông tin hợp pháp.</p>
+    <p>Tất cả nội dung, ý tưởng, mã nguồn, hình ảnh và dữ liệu trong đồ án đều được tôi tự phát triển hoặc sử dụng từ các nguồn có dẫn chứng, trích dẫn rõ ràng theo đúng quy định về bản quyền và sở hữu trí tuệ.</p>
+    <p>Toàn bộ kết quả trong báo cáo và sản phẩm phần mềm đính kèm phản ánh trung thực quá trình làm việc, không có sự can thiệp, chỉnh sửa hoặc thay đổi với mục đích gian lận.</p>
+    <p>Tôi chịu hoàn toàn trách nhiệm trước pháp luật và quy chế đào tạo của Trường Đại học Nam Cần Thơ về mọi nội dung đã trình bày.</p>
+    <div class="signature-block">
+        <p class="date" style="text-indent:0">Cần Thơ, ngày ... tháng 3 năm 2026</p>
+        <p style="text-indent:0;font-weight:bold">Người thực hiện</p>
+        <p class="name" style="text-indent:0">(Ký tên)</p>
+    </div>
+</div>
+
+<!-- ==================== NHẬN XÉT GVHD ==================== -->
+<div class="page page-break">
+    <h1 class="chapter" style="page-break-before:auto">NHẬN XÉT ĐÁNH GIÁ CỦA GIÁO VIÊN HƯỚNG DẪN</h1>
+    <br><br>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <div class="signature-block">
+        <p class="date" style="text-indent:0">Cần Thơ, ngày .... tháng .... năm 2026</p>
+    </div>
+
+    <h1 class="chapter">NHẬN XÉT ĐÁNH GIÁ CỦA GIÁO VIÊN PHẢN BIỆN</h1>
+    <br><br>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <p>........................................................................................................................................................................................................................................</p>
+    <div class="signature-block">
+        <p class="date" style="text-indent:0">Cần Thơ, ngày .... tháng .... năm 2026</p>
+    </div>
+</div>
+
+<!-- ==================== MỤC LỤC ==================== -->
+<div class="page page-break">
+    <h1 class="chapter" style="page-break-before:auto">MỤC LỤC</h1>
+    <div class="toc">
+        <div class="toc-item level1"><span>CHƯƠNG I: GIỚI THIỆU</span><span class="toc-dots"></span><span>1</span></div>
+        <div class="toc-item level2"><span>1.1 Đặt vấn đề nghiên cứu</span><span class="toc-dots"></span><span>1</span></div>
+        <div class="toc-item level2"><span>1.2 Mục tiêu nghiên cứu</span><span class="toc-dots"></span><span>2</span></div>
+        <div class="toc-item level2"><span>1.3 Phạm vi nghiên cứu</span><span class="toc-dots"></span><span>3</span></div>
+        <div class="toc-item level2"><span>1.4 Đối tượng nghiên cứu</span><span class="toc-dots"></span><span>3</span></div>
+
+        <div class="toc-item level1"><span>CHƯƠNG II: CƠ SỞ LÝ THUYẾT</span><span class="toc-dots"></span><span>4</span></div>
+        <div class="toc-item level2"><span>2.1 Tổng quan về Node.js và Express.js</span><span class="toc-dots"></span><span>4</span></div>
+        <div class="toc-item level2"><span>2.2 Hệ quản trị CSDL Microsoft SQL Server</span><span class="toc-dots"></span><span>5</span></div>
+        <div class="toc-item level2"><span>2.3 Template Engine EJS</span><span class="toc-dots"></span><span>6</span></div>
+        <div class="toc-item level2"><span>2.4 Bootstrap 5 và Font Awesome</span><span class="toc-dots"></span><span>6</span></div>
+        <div class="toc-item level2"><span>2.5 Mô hình MVC</span><span class="toc-dots"></span><span>7</span></div>
+
+        <div class="toc-item level1"><span>CHƯƠNG III: PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG</span><span class="toc-dots"></span><span>8</span></div>
+        <div class="toc-item level2"><span>3.1 Mô hình phân rã chức năng (BFD)</span><span class="toc-dots"></span><span>8</span></div>
+        <div class="toc-item level2"><span>3.2 Biểu đồ luồng dữ liệu (DFD)</span><span class="toc-dots"></span><span>10</span></div>
+        <div class="toc-item level2"><span>3.3 Sơ đồ Use Case</span><span class="toc-dots"></span><span>12</span></div>
+        <div class="toc-item level2"><span>3.4 Mô hình thực thể kết hợp (ERD)</span><span class="toc-dots"></span><span>13</span></div>
+        <div class="toc-item level2"><span>3.5 Thiết kế cơ sở dữ liệu</span><span class="toc-dots"></span><span>14</span></div>
+
+        <div class="toc-item level1"><span>CHƯƠNG IV: CHƯƠNG TRÌNH ỨNG DỤNG</span><span class="toc-dots"></span><span>20</span></div>
+        <div class="toc-item level2"><span>4.1 Giao diện người dùng</span><span class="toc-dots"></span><span>20</span></div>
+        <div class="toc-item level2"><span>4.2 Giao diện quản trị (Admin)</span><span class="toc-dots"></span><span>24</span></div>
+
+        <div class="toc-item level1"><span>CHƯƠNG V: THỬ NGHIỆM VÀ ĐÁNH GIÁ</span><span class="toc-dots"></span><span>29</span></div>
+        <div class="toc-item level2"><span>5.1 Ưu điểm</span><span class="toc-dots"></span><span>29</span></div>
+        <div class="toc-item level2"><span>5.2 Nhược điểm</span><span class="toc-dots"></span><span>29</span></div>
+
+        <div class="toc-item level1"><span>CHƯƠNG VI: KẾT LUẬN</span><span class="toc-dots"></span><span>30</span></div>
+        <div class="toc-item level2"><span>6.1 Kết quả đạt được</span><span class="toc-dots"></span><span>30</span></div>
+        <div class="toc-item level2"><span>6.2 Hướng phát triển trong tương lai</span><span class="toc-dots"></span><span>30</span></div>
+        <div class="toc-item level2"><span>6.3 Kết luận</span><span class="toc-dots"></span><span>31</span></div>
+
+        <div class="toc-item level1"><span>TÀI LIỆU THAM KHẢO</span><span class="toc-dots"></span><span>32</span></div>
+    </div>
+</div>
+
+<!-- ==================== CHƯƠNG I ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG I: GIỚI THIỆU</h1>
+
+    <h2>1.1 Đặt vấn đề nghiên cứu</h2>
+    <p>Trong bối cảnh thương mại điện tử phát triển mạnh mẽ tại Việt Nam, ngành thời trang là một trong những lĩnh vực có tốc độ tăng trưởng nhanh nhất trên các nền tảng trực tuyến. Theo thống kê, thị trường thời trang trực tuyến Việt Nam liên tục tăng trưởng với tốc độ trên 20% mỗi năm, cho thấy nhu cầu mua sắm thời trang qua Internet ngày càng lớn.</p>
+    <p>Tuy nhiên, nhiều cửa hàng thời trang vừa và nhỏ vẫn đang quản lý bằng phương pháp thủ công: ghi chép sổ sách, quản lý tồn kho bằng Excel, không có hệ thống theo dõi đơn hàng hay thống kê doanh thu tự động. Điều này dẫn đến nhiều sai sót trong quản lý, mất thời gian và khó mở rộng kinh doanh.</p>
+    <p>Bên cạnh đó, việc tích hợp các tính năng hiện đại như chatbot tư vấn thời trang thông minh, gợi ý kích thước dựa trên số đo cơ thể, hệ thống mã giảm giá... giúp nâng cao trải nghiệm khách hàng và tăng khả năng cạnh tranh.</p>
+    <p>Xuất phát từ nhu cầu thực tế đó, em đã chọn đề tài <b>"Xây dựng Website Quản Lý Shop Thời Trang"</b> nhằm xây dựng một hệ thống web hoàn chỉnh, đáp ứng nhu cầu quản lý của chủ cửa hàng và mua sắm của khách hàng.</p>
+
+    <h2>1.2 Mục tiêu nghiên cứu</h2>
+    <h3>1.2.1 Mục tiêu chung</h3>
+    <p>Xây dựng một website quản lý shop thời trang hoàn chỉnh với hai phân hệ: quản trị (admin) và người dùng (khách hàng), sử dụng công nghệ Node.js, Express.js kết hợp hệ quản trị cơ sở dữ liệu Microsoft SQL Server 2022.</p>
+
+    <h3>1.2.2 Mục tiêu cụ thể</h3>
+    <ul>
+        <li>Xây dựng hệ thống xác thực và phân quyền với 3 vai trò: Admin, Nhân viên, Người dùng.</li>
+        <li>Xây dựng trang quản trị với đầy đủ chức năng CRUD cho: sản phẩm, danh mục, khách hàng, nhân viên, đơn hàng, phiếu nhập hàng, mã giảm giá, liên hệ.</li>
+        <li>Xây dựng trang Dashboard tổng quan với biểu đồ doanh thu, thống kê thời gian thực.</li>
+        <li>Xây dựng module thống kê và báo cáo: doanh thu theo tháng, sản phẩm bán chạy, tồn kho, khách hàng thân thiết.</li>
+        <li>Xây dựng trang người dùng: trang chủ, cửa hàng, giỏ hàng, đặt hàng, theo dõi đơn hàng, hồ sơ cá nhân.</li>
+        <li>Tích hợp AI Chatbot tư vấn thời trang: gợi ý size, xu hướng thời trang, tư vấn theo dáng người.</li>
+        <li>Xây dựng hệ thống tìm kiếm toàn hệ thống (9 bảng dữ liệu).</li>
+    </ul>
+
+    <h2>1.3 Phạm vi nghiên cứu</h2>
+    <h3>1.3.1 Không gian</h3>
+    <p>Hệ thống được xây dựng và triển khai trên môi trường localhost, phục vụ cho mô hình cửa hàng thời trang vừa và nhỏ tại Việt Nam.</p>
+    <h3>1.3.2 Phạm vi thời gian</h3>
+    <p>Đồ án được thực hiện trong khuôn khổ học kỳ Đồ án Cơ sở, năm học 2025 – 2026.</p>
+
+    <h2>1.4 Đối tượng nghiên cứu</h2>
+    <ul>
+        <li>Quy trình quản lý cửa hàng thời trang: sản phẩm, đơn hàng, kho hàng, khách hàng, nhân viên.</li>
+        <li>Công nghệ phát triển web server-side: Node.js, Express.js, EJS, SQL Server.</li>
+        <li>Chatbot tư vấn thời trang dựa trên quy tắc (Rule-based AI).</li>
+        <li>Giao diện người dùng responsive với Bootstrap 5.</li>
+    </ul>
+</div>
+
+<!-- ==================== CHƯƠNG II ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG II: CƠ SỞ LÝ THUYẾT</h1>
+
+    <h2>2.1 Tổng quan về Node.js và Express.js</h2>
+    <h3>2.1.1 Node.js</h3>
+    <p>Node.js là một nền tảng phát triển ứng dụng phía server được xây dựng trên engine V8 của Google Chrome. Node.js sử dụng mô hình I/O không đồng bộ (non-blocking I/O), cho phép xử lý nhiều kết nối đồng thời với hiệu suất cao.</p>
+    <p><b>Ưu điểm:</b></p>
+    <ul>
+        <li>Hiệu suất cao nhờ engine V8 và mô hình event-driven.</li>
+        <li>Dùng JavaScript cả frontend và backend, giúp đồng nhất ngôn ngữ lập trình.</li>
+        <li>Hệ sinh thái npm đồ sộ với hơn 2 triệu package.</li>
+        <li>Phù hợp cho ứng dụng web thời gian thực.</li>
+    </ul>
+
+    <h3>2.1.2 Express.js</h3>
+    <p>Express.js là framework web phổ biến nhất cho Node.js, cung cấp cơ chế routing, middleware, template engine linh hoạt. Express.js giúp xây dựng ứng dụng web và API một cách nhanh chóng, có cấu trúc rõ ràng.</p>
+    <p>Trong đồ án, Express.js phiên bản 4.18.2 được sử dụng làm framework chính cho toàn bộ hệ thống.</p>
+
+    <h2>2.2 Hệ quản trị CSDL Microsoft SQL Server 2022</h2>
+    <p>Microsoft SQL Server 2022 là hệ quản trị cơ sở dữ liệu quan hệ (RDBMS) mạnh mẽ của Microsoft. SQL Server hỗ trợ ngôn ngữ truy vấn T-SQL, stored procedure, transaction, trigger và nhiều tính năng bảo mật nâng cao.</p>
+    <p><b>Ưu điểm:</b></p>
+    <ul>
+        <li>Hiệu suất truy vấn cao với Query Optimizer thông minh.</li>
+        <li>Hỗ trợ Transaction đảm bảo tính toàn vẹn dữ liệu (ACID).</li>
+        <li>Bảo mật tốt với Windows Authentication và mã hóa dữ liệu.</li>
+        <li>Tích hợp tốt với các ứng dụng trên nền tảng Windows.</li>
+    </ul>
+    <p><b>Nhược điểm:</b> Chi phí bản quyền cao cho bản Enterprise; chủ yếu chạy trên Windows.</p>
+    <p>Trong đồ án, kết nối SQL Server sử dụng driver <b>mssql/msnodesqlv8</b> qua ODBC Driver 18, xác thực bằng Windows Authentication, database tên <b>shop_thoi_trang</b> với collation <b>Vietnamese_CI_AS</b>.</p>
+
+    <h2>2.3 Template Engine EJS</h2>
+    <p>EJS (Embedded JavaScript) là template engine cho phép nhúng mã JavaScript trực tiếp vào HTML. EJS sử dụng cú pháp đơn giản với các tag &lt;%= %&gt; để chèn dữ liệu, &lt;% %&gt; để thực thi logic, cho phép render HTML phía server một cách linh hoạt.</p>
+    <p>Kết hợp với <b>express-ejs-layouts</b>, hệ thống có 2 layout chính: layout quản trị (main.ejs) với sidebar menu, và layout người dùng (user.ejs) với navbar trên cùng.</p>
+
+    <h2>2.4 Bootstrap 5 và Font Awesome</h2>
+    <p><b>Bootstrap 5.3.2</b> là CSS framework responsive phổ biến nhất, cung cấp hệ thống grid, components (button, card, modal, table...) và utilities giúp xây dựng giao diện nhanh chóng, tương thích đa thiết bị.</p>
+    <p><b>Font Awesome 6.5.0</b> cung cấp bộ icon vector phong phú với hơn 2.000 icon miễn phí, giúp giao diện trực quan và chuyên nghiệp hơn.</p>
+    <p><b>Chart.js 4.4.0</b> là thư viện vẽ biểu đồ JavaScript, được sử dụng để hiển thị biểu đồ doanh thu, biểu đồ tròn danh mục trên trang Dashboard và Thống kê.</p>
+
+    <h2>2.5 Mô hình MVC (Model – View – Controller)</h2>
+    <p>Hệ thống được xây dựng theo mô hình MVC, tách biệt ba thành phần chính:</p>
+    <ul>
+        <li><b>Model:</b> Cơ sở dữ liệu SQL Server — lưu trữ và truy xuất dữ liệu qua các câu truy vấn parameterized.</li>
+        <li><b>View:</b> 40 file template EJS tổ chức trong thư mục views/ — hiển thị giao diện cho người dùng.</li>
+        <li><b>Controller:</b> 15 file route trong thư mục routes/ — xử lý logic nghiệp vụ, nhận request và trả response.</li>
+    </ul>
+</div>
+
+<!-- ==================== CHƯƠNG III ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG III: PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG</h1>
+
+    <h2>3.1 Mô hình phân rã chức năng (BFD)</h2>
+    <p>Hệ thống "Website Quản Lý Shop Thời Trang" được chia thành 3 phân hệ chính:</p>
+
+    <div style="background:#f9f9f9;border:1px solid #ccc;padding:15px;margin:15px 0;font-family:'Segoe UI',sans-serif;font-size:11pt;">
+        <div style="text-align:center;font-weight:bold;padding:8px;background:#667eea;color:white;border-radius:4px;">HỆ THỐNG QUẢN LÝ SHOP THỜI TRANG</div>
+        <div style="display:flex;gap:15px;margin-top:15px;">
+            <div style="flex:1;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+                <div style="background:#e74c3c;color:white;padding:6px;text-align:center;font-weight:bold;font-size:10pt;">PHÂN HỆ XÁC THỰC</div>
+                <div style="padding:8px;font-size:10pt;">
+                    • Đăng nhập<br>• Đăng ký<br>• Đăng xuất<br>• Đổi mật khẩu<br>• Phân quyền (3 vai trò)
+                </div>
+            </div>
+            <div style="flex:2;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+                <div style="background:#2ecc71;color:white;padding:6px;text-align:center;font-weight:bold;font-size:10pt;">PHÂN HỆ QUẢN TRỊ (ADMIN)</div>
+                <div style="padding:8px;font-size:10pt;columns:2;">
+                    • Dashboard tổng quan<br>• QL Sản phẩm (CRUD)<br>• QL Danh mục<br>• QL Đơn hàng<br>• QL Khách hàng<br>• QL Nhân viên<br>• Nhập hàng<br>• Thống kê & Báo cáo<br>• Tìm kiếm nâng cao<br>• Cài đặt hệ thống<br>• QL Mã giảm giá<br>• QL Liên hệ
+                </div>
+            </div>
+            <div style="flex:1.5;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+                <div style="background:#3498db;color:white;padding:6px;text-align:center;font-weight:bold;font-size:10pt;">PHÂN HỆ NGƯỜI DÙNG</div>
+                <div style="padding:8px;font-size:10pt;">
+                    • Trang chủ<br>• Cửa hàng (lọc, tìm)<br>• Chi tiết sản phẩm<br>• Giỏ hàng<br>• Đặt hàng & Thanh toán<br>• Đơn hàng của tôi<br>• Hồ sơ cá nhân<br>• AI Chatbot tư vấn<br>• Liên hệ
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>3.2 Biểu đồ luồng dữ liệu (DFD)</h2>
+    <h3>3.2.1 Biểu đồ ngữ cảnh (Mức 0)</h3>
+    <p>Hệ thống tương tác với 3 tác nhân bên ngoài:</p>
+    <ul>
+        <li><b>Khách hàng (Người dùng):</b> Duyệt sản phẩm → Thêm giỏ hàng → Đặt hàng → Theo dõi đơn hàng → Chat tư vấn.</li>
+        <li><b>Admin:</b> Quản lý sản phẩm, đơn hàng, khách hàng, nhân viên, kho hàng, thống kê.</li>
+        <li><b>Hệ thống CSDL (SQL Server):</b> Lưu trữ tất cả dữ liệu của hệ thống qua 12 bảng.</li>
+    </ul>
+
+    <h3>3.2.2 Biểu đồ luồng dữ liệu mức 1</h3>
+    <p>Hệ thống được phân rã thành các xử lý chính:</p>
+    <table>
+        <tr><th>STT</th><th>Xử lý</th><th>Mô tả</th><th>Dữ liệu vào</th><th>Dữ liệu ra</th></tr>
+        <tr><td>1.0</td><td>Xác thực</td><td>Đăng nhập, đăng ký, phân quyền</td><td>Tên đăng nhập, mật khẩu</td><td>Session user, chuyển hướng</td></tr>
+        <tr><td>2.0</td><td>QL Sản phẩm</td><td>Thêm, sửa, xóa, xem sản phẩm</td><td>Thông tin SP, hình ảnh</td><td>Danh sách SP, chi tiết SP</td></tr>
+        <tr><td>3.0</td><td>QL Đơn hàng</td><td>Tạo, cập nhật trạng thái, in hóa đơn</td><td>Giỏ hàng, thông tin KH</td><td>Đơn hàng, chi tiết đơn</td></tr>
+        <tr><td>4.0</td><td>Mua hàng</td><td>Duyệt SP, giỏ hàng, đặt hàng</td><td>Lọc SP, số lượng, mã giảm giá</td><td>Giỏ hàng, xác nhận đơn</td></tr>
+        <tr><td>5.0</td><td>Thống kê</td><td>Báo cáo doanh thu, tồn kho</td><td>Tháng, năm lọc</td><td>Biểu đồ, bảng thống kê</td></tr>
+        <tr><td>6.0</td><td>Chatbot AI</td><td>Tư vấn size, xu hướng, tìm SP</td><td>Tin nhắn người dùng</td><td>Phản hồi chatbot, SP gợi ý</td></tr>
+    </table>
+
+    <h2>3.3 Sơ đồ Use Case</h2>
+    <p>Hệ thống có 3 actor chính với các use case sau:</p>
+    <table>
+        <tr><th>Actor</th><th>Use Case</th></tr>
+        <tr>
+            <td style="vertical-align:middle"><b>Khách hàng<br>(Người dùng)</b></td>
+            <td>Đăng ký / Đăng nhập / Đổi mật khẩu<br>Xem trang chủ / Duyệt cửa hàng / Xem chi tiết SP<br>Thêm/Sửa/Xóa giỏ hàng<br>Đặt hàng (áp mã giảm giá)<br>Xem/Hủy đơn hàng<br>Cập nhật hồ sơ (avatar, số đo)<br>Chat với AI Chatbot<br>Gửi liên hệ</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:middle"><b>Admin</b></td>
+            <td>Xem Dashboard tổng quan<br>CRUD: Sản phẩm, Danh mục, Khách hàng, Nhân viên<br>Quản lý đơn hàng (cập nhật trạng thái)<br>Tạo phiếu nhập hàng<br>Xem thống kê & In báo cáo<br>Tìm kiếm toàn hệ thống<br>Quản lý mã giảm giá<br>Phản hồi liên hệ<br>Cài đặt hệ thống</td>
+        </tr>
+        <tr>
+            <td style="vertical-align:middle"><b>AI Chatbot</b></td>
+            <td>Gợi ý size (dựa trên số đo)<br>Tư vấn xu hướng thời trang 2026<br>Tìm kiếm sản phẩm<br>Gợi ý trang phục theo dáng người</td>
+        </tr>
+    </table>
+
+    <h2>3.4 Mô hình thực thể kết hợp (ERD)</h2>
+    <p>Cơ sở dữ liệu gồm 12 bảng với 11 mối quan hệ khóa ngoại. Sơ đồ ERD chi tiết có thể xem tại trang <b>/diagram.html</b>.</p>
+
+    <div style="background:#f9f9f9;border:1px solid #ccc;padding:15px;margin:15px 0;font-size:11pt;">
+        <p style="text-indent:0;text-align:center;font-weight:bold;margin-bottom:10px;">Sơ đồ quan hệ giữa các bảng</p>
+        <div style="font-family:'Segoe UI',sans-serif;line-height:2;">
+            <code>tai_khoan</code> ─1:1─▶ <code>nhan_vien</code> (tai_khoan_id)<br>
+            <code>tai_khoan</code> ─1:N─▶ <code>don_hang</code> (tai_khoan_id)<br>
+            <code>tai_khoan</code> ─1:N─▶ <code>lien_he</code> (tai_khoan_id)<br>
+            <code>khach_hang</code> ─1:N─▶ <code>don_hang</code> (khach_hang_id)<br>
+            <code>nhan_vien</code> ─1:N─▶ <code>don_hang</code> (nhan_vien_id)<br>
+            <code>nhan_vien</code> ─1:N─▶ <code>phieu_nhap</code> (nhan_vien_id)<br>
+            <code>danh_muc</code> ─1:N─▶ <code>san_pham</code> (danh_muc_id)<br>
+            <code>don_hang</code> ─1:N─▶ <code>chi_tiet_don_hang</code> (don_hang_id)<br>
+            <code>san_pham</code> ─1:N─▶ <code>chi_tiet_don_hang</code> (san_pham_id)<br>
+            <code>phieu_nhap</code> ─1:N─▶ <code>chi_tiet_phieu_nhap</code> (phieu_nhap_id)<br>
+            <code>san_pham</code> ─1:N─▶ <code>chi_tiet_phieu_nhap</code> (san_pham_id)
+        </div>
+    </div>
+
+    <h2>3.5 Thiết kế cơ sở dữ liệu</h2>
+    <p>Dưới đây là chi tiết cấu trúc từng bảng trong cơ sở dữ liệu <b>shop_thoi_trang</b>:</p>
+
+    <h3>Bảng 1: tai_khoan (18 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã tài khoản</td></tr>
+        <tr><td>ten_dang_nhap</td><td>NVARCHAR(50)</td><td>UNIQUE, NOT NULL</td><td>Tên đăng nhập</td></tr>
+        <tr><td>mat_khau</td><td>NVARCHAR(255)</td><td>NOT NULL</td><td>Mật khẩu (bcrypt hash)</td></tr>
+        <tr><td>ho_ten</td><td>NVARCHAR(100)</td><td>NOT NULL</td><td>Họ tên người dùng</td></tr>
+        <tr><td>vai_tro</td><td>NVARCHAR(20)</td><td>CHECK</td><td>admin / nhanvien / nguoidung</td></tr>
+        <tr><td>trang_thai</td><td>BIT</td><td>DEFAULT 1</td><td>1: Hoạt động, 0: Khóa</td></tr>
+        <tr><td>email</td><td>NVARCHAR(100)</td><td>NULL</td><td>Email</td></tr>
+        <tr><td>so_dien_thoai</td><td>NVARCHAR(15)</td><td>NULL</td><td>Số điện thoại</td></tr>
+        <tr><td>dia_chi</td><td>NVARCHAR(255)</td><td>NULL</td><td>Địa chỉ</td></tr>
+        <tr><td>hinh_dai_dien</td><td>NVARCHAR(255)</td><td>NULL</td><td>Đường dẫn avatar</td></tr>
+        <tr><td>chieu_cao</td><td>DECIMAL</td><td>NULL</td><td>Chiều cao (cm)</td></tr>
+        <tr><td>can_nang</td><td>DECIMAL</td><td>NULL</td><td>Cân nặng (kg)</td></tr>
+        <tr><td>vong_1/2/3</td><td>DECIMAL</td><td>NULL</td><td>Số đo 3 vòng (cm)</td></tr>
+        <tr><td>ngay_sinh</td><td>DATE</td><td>NULL</td><td>Ngày sinh</td></tr>
+        <tr><td>gioi_tinh</td><td>NVARCHAR(10)</td><td>NULL</td><td>Giới tính</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo tài khoản</td></tr>
+    </table>
+
+    <h3>Bảng 2: danh_muc (5 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã danh mục</td></tr>
+        <tr><td>ten_danh_muc</td><td>NVARCHAR(100)</td><td>NOT NULL</td><td>Tên danh mục</td></tr>
+        <tr><td>mo_ta</td><td>NVARCHAR(255)</td><td>NULL</td><td>Mô tả</td></tr>
+        <tr><td>trang_thai</td><td>BIT</td><td>DEFAULT 1</td><td>1: Hiện, 0: Ẩn</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo</td></tr>
+    </table>
+
+    <h3>Bảng 3: san_pham (15 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã sản phẩm (auto)</td></tr>
+        <tr><td>ma_sp</td><td>NVARCHAR(20)</td><td>UNIQUE, NOT NULL</td><td>Mã sản phẩm hiển thị</td></tr>
+        <tr><td>ten_sp</td><td>NVARCHAR(200)</td><td>NOT NULL</td><td>Tên sản phẩm</td></tr>
+        <tr><td>danh_muc_id</td><td>INT</td><td>FK → danh_muc</td><td>Mã danh mục</td></tr>
+        <tr><td>gia_nhap</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Giá nhập</td></tr>
+        <tr><td>gia_ban</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Giá bán</td></tr>
+        <tr><td>so_luong</td><td>INT</td><td>DEFAULT 0</td><td>Số lượng tồn kho</td></tr>
+        <tr><td>kich_thuoc</td><td>NVARCHAR(10)</td><td>NULL</td><td>Kích thước (S/M/L/XL...)</td></tr>
+        <tr><td>mau_sac</td><td>NVARCHAR(50)</td><td>NULL</td><td>Màu sắc</td></tr>
+        <tr><td>chat_lieu</td><td>NVARCHAR(100)</td><td>NULL</td><td>Chất liệu</td></tr>
+        <tr><td>hinh_anh</td><td>NVARCHAR(255)</td><td>NULL</td><td>Đường dẫn hình ảnh</td></tr>
+        <tr><td>mo_ta</td><td>NVARCHAR(MAX)</td><td>NULL</td><td>Mô tả sản phẩm</td></tr>
+        <tr><td>gioi_tinh</td><td>NVARCHAR(10)</td><td>DEFAULT 'Unisex'</td><td>Nam / Nữ / Unisex</td></tr>
+        <tr><td>trang_thai</td><td>BIT</td><td>DEFAULT 1</td><td>1: Đang bán, 0: Ngừng</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày thêm SP</td></tr>
+    </table>
+
+    <h3>Bảng 4: khach_hang (7 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã khách hàng</td></tr>
+        <tr><td>ho_ten</td><td>NVARCHAR(100)</td><td>NOT NULL</td><td>Họ tên</td></tr>
+        <tr><td>so_dien_thoai</td><td>NVARCHAR(15)</td><td>NULL</td><td>Số điện thoại</td></tr>
+        <tr><td>email</td><td>NVARCHAR(100)</td><td>NULL</td><td>Email</td></tr>
+        <tr><td>dia_chi</td><td>NVARCHAR(255)</td><td>NULL</td><td>Địa chỉ</td></tr>
+        <tr><td>gioi_tinh</td><td>NVARCHAR(10)</td><td>CHECK</td><td>Nam / Nu / Khac</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo</td></tr>
+    </table>
+
+    <h3>Bảng 5: nhan_vien (13 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã nhân viên (auto)</td></tr>
+        <tr><td>ma_nv</td><td>NVARCHAR(20)</td><td>UNIQUE, NOT NULL</td><td>Mã nhân viên</td></tr>
+        <tr><td>ho_ten</td><td>NVARCHAR(100)</td><td>NOT NULL</td><td>Họ tên</td></tr>
+        <tr><td>so_dien_thoai</td><td>NVARCHAR(15)</td><td>NULL</td><td>Số điện thoại</td></tr>
+        <tr><td>email</td><td>NVARCHAR(100)</td><td>NULL</td><td>Email</td></tr>
+        <tr><td>dia_chi</td><td>NVARCHAR(255)</td><td>NULL</td><td>Địa chỉ</td></tr>
+        <tr><td>gioi_tinh</td><td>NVARCHAR(10)</td><td>CHECK</td><td>Nam / Nu / Khac</td></tr>
+        <tr><td>chuc_vu</td><td>NVARCHAR(50)</td><td>NULL</td><td>Chức vụ</td></tr>
+        <tr><td>luong</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Lương</td></tr>
+        <tr><td>ngay_vao_lam</td><td>DATE</td><td>NULL</td><td>Ngày vào làm</td></tr>
+        <tr><td>trang_thai</td><td>BIT</td><td>DEFAULT 1</td><td>1: Đang làm, 0: Nghỉ</td></tr>
+        <tr><td>tai_khoan_id</td><td>INT</td><td>FK → tai_khoan</td><td>Tài khoản liên kết</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo</td></tr>
+    </table>
+
+    <h3>Bảng 6: don_hang (13 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã đơn hàng (auto)</td></tr>
+        <tr><td>ma_dh</td><td>NVARCHAR(20)</td><td>UNIQUE, NOT NULL</td><td>Mã đơn hàng hiển thị</td></tr>
+        <tr><td>khach_hang_id</td><td>INT</td><td>FK → khach_hang</td><td>Khách hàng</td></tr>
+        <tr><td>tai_khoan_id</td><td>INT</td><td>FK → tai_khoan</td><td>Tài khoản đặt online</td></tr>
+        <tr><td>nhan_vien_id</td><td>INT</td><td>FK → nhan_vien</td><td>Nhân viên xử lý</td></tr>
+        <tr><td>ngay_dat</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày đặt hàng</td></tr>
+        <tr><td>tong_tien</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Tổng tiền trước giảm</td></tr>
+        <tr><td>giam_gia</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Số tiền giảm</td></tr>
+        <tr><td>thanh_toan</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Thực thanh toán</td></tr>
+        <tr><td>phuong_thuc_tt</td><td>NVARCHAR(20)</td><td>CHECK</td><td>tien_mat / chuyen_khoan / the</td></tr>
+        <tr><td>trang_thai</td><td>NVARCHAR(20)</td><td>CHECK</td><td>5 trạng thái đơn hàng</td></tr>
+        <tr><td>ghi_chu</td><td>NVARCHAR(MAX)</td><td>NULL</td><td>Ghi chú</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo record</td></tr>
+    </table>
+
+    <h3>Bảng 7: chi_tiet_don_hang (6 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã chi tiết</td></tr>
+        <tr><td>don_hang_id</td><td>INT</td><td>FK → don_hang (CASCADE)</td><td>Đơn hàng</td></tr>
+        <tr><td>san_pham_id</td><td>INT</td><td>FK → san_pham</td><td>Sản phẩm</td></tr>
+        <tr><td>so_luong</td><td>INT</td><td>NOT NULL, DEFAULT 1</td><td>Số lượng mua</td></tr>
+        <tr><td>don_gia</td><td>DECIMAL(15,2)</td><td>NOT NULL</td><td>Đơn giá tại thời điểm</td></tr>
+        <tr><td>thanh_tien</td><td>DECIMAL(15,2)</td><td>NOT NULL</td><td>= số lượng × đơn giá</td></tr>
+    </table>
+
+    <h3>Bảng 8: phieu_nhap (8 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã phiếu</td></tr>
+        <tr><td>ma_phieu</td><td>NVARCHAR(20)</td><td>UNIQUE, NOT NULL</td><td>Mã phiếu nhập</td></tr>
+        <tr><td>nhan_vien_id</td><td>INT</td><td>FK → nhan_vien</td><td>NV thực hiện</td></tr>
+        <tr><td>nha_cung_cap</td><td>NVARCHAR(200)</td><td>NULL</td><td>Nhà cung cấp</td></tr>
+        <tr><td>ngay_nhap</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày nhập</td></tr>
+        <tr><td>tong_tien</td><td>DECIMAL(15,2)</td><td>DEFAULT 0</td><td>Tổng tiền nhập</td></tr>
+        <tr><td>ghi_chu</td><td>NVARCHAR(MAX)</td><td>NULL</td><td>Ghi chú</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>DEFAULT GETDATE()</td><td>Ngày tạo</td></tr>
+    </table>
+
+    <h3>Bảng 9: chi_tiet_phieu_nhap (6 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã chi tiết</td></tr>
+        <tr><td>phieu_nhap_id</td><td>INT</td><td>FK → phieu_nhap (CASCADE)</td><td>Phiếu nhập</td></tr>
+        <tr><td>san_pham_id</td><td>INT</td><td>FK → san_pham</td><td>Sản phẩm</td></tr>
+        <tr><td>so_luong</td><td>INT</td><td>NOT NULL, DEFAULT 1</td><td>Số lượng nhập</td></tr>
+        <tr><td>don_gia</td><td>DECIMAL(15,2)</td><td>NOT NULL</td><td>Đơn giá nhập</td></tr>
+        <tr><td>thanh_tien</td><td>DECIMAL(15,2)</td><td>NOT NULL</td><td>= số lượng × đơn giá</td></tr>
+    </table>
+
+    <h3>Bảng 10: ma_giam_gia (12 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã giảm giá (auto)</td></tr>
+        <tr><td>ma_code</td><td>NVARCHAR(50)</td><td>UNIQUE, NOT NULL</td><td>Mã code</td></tr>
+        <tr><td>mo_ta</td><td>NVARCHAR(255)</td><td>NULL</td><td>Mô tả</td></tr>
+        <tr><td>loai_giam</td><td>NVARCHAR(20)</td><td>NULL</td><td>phan_tram / tien</td></tr>
+        <tr><td>gia_tri</td><td>DECIMAL</td><td>NOT NULL</td><td>Giá trị giảm</td></tr>
+        <tr><td>don_toi_thieu</td><td>DECIMAL</td><td>NULL</td><td>Đơn hàng tối thiểu</td></tr>
+        <tr><td>so_luong</td><td>INT</td><td>NULL</td><td>Số lượng mã</td></tr>
+        <tr><td>da_su_dung</td><td>INT</td><td>NULL</td><td>Đã sử dụng</td></tr>
+        <tr><td>ngay_bat_dau</td><td>DATETIME</td><td>NULL</td><td>Ngày bắt đầu</td></tr>
+        <tr><td>ngay_ket_thuc</td><td>DATETIME</td><td>NULL</td><td>Ngày kết thúc</td></tr>
+        <tr><td>trang_thai</td><td>BIT</td><td>NULL</td><td>1: Hoạt động</td></tr>
+        <tr><td>ngay_tao</td><td>DATETIME</td><td>NULL</td><td>Ngày tạo</td></tr>
+    </table>
+
+    <h3>Bảng 11: lien_he (10 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã liên hệ</td></tr>
+        <tr><td>tai_khoan_id</td><td>INT</td><td>FK → tai_khoan</td><td>Tài khoản gửi</td></tr>
+        <tr><td>ho_ten</td><td>NVARCHAR(100)</td><td>NOT NULL</td><td>Họ tên</td></tr>
+        <tr><td>email</td><td>NVARCHAR(100)</td><td>NULL</td><td>Email</td></tr>
+        <tr><td>chu_de</td><td>NVARCHAR(200)</td><td>NOT NULL</td><td>Chủ đề</td></tr>
+        <tr><td>noi_dung</td><td>NVARCHAR(MAX)</td><td>NOT NULL</td><td>Nội dung tin nhắn</td></tr>
+        <tr><td>phan_hoi</td><td>NVARCHAR(MAX)</td><td>NULL</td><td>Phản hồi từ admin</td></tr>
+        <tr><td>trang_thai</td><td>NVARCHAR(20)</td><td>NULL</td><td>cho_xu_ly / da_phan_hoi</td></tr>
+        <tr><td>ngay_gui</td><td>DATETIME</td><td>NULL</td><td>Ngày gửi</td></tr>
+        <tr><td>ngay_phan_hoi</td><td>DATETIME</td><td>NULL</td><td>Ngày phản hồi</td></tr>
+    </table>
+
+    <h3>Bảng 12: cai_dat (4 cột)</h3>
+    <table>
+        <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Ràng buộc</th><th>Mô tả</th></tr>
+        <tr><td>id</td><td>INT</td><td>PK, Identity</td><td>Mã cài đặt</td></tr>
+        <tr><td>khoa</td><td>NVARCHAR(100)</td><td>UNIQUE, NOT NULL</td><td>Tên khóa (key)</td></tr>
+        <tr><td>gia_tri</td><td>NVARCHAR(MAX)</td><td>NULL</td><td>Giá trị (value)</td></tr>
+        <tr><td>ngay_cap_nhat</td><td>DATETIME</td><td>NULL</td><td>Ngày cập nhật</td></tr>
+    </table>
+</div>
+
+<!-- ==================== CHƯƠNG IV ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG IV: CHƯƠNG TRÌNH ỨNG DỤNG</h1>
+
+    <h2>4.1 Giao diện người dùng</h2>
+
+    <h3>4.1.1 Trang chủ</h3>
+    <p>Trang chủ hiển thị slider banner giới thiệu, danh sách danh mục sản phẩm (10 danh mục: Áo nam, Quần nam, Váy/Đầm, Giày dép, Phụ kiện, Áo nữ, Quần nữ, Áo khoác, Đồ thể thao, Túi xách) và 8 sản phẩm mới nhất với hình ảnh, tên, giá bán.</p>
+    <p class="no-indent"><i>(Chụp screenshot trang chủ tại: http://localhost:3000/trang-chu)</i></p>
+
+    <h3>4.1.2 Trang cửa hàng</h3>
+    <p>Trang cửa hàng cho phép khách hàng duyệt toàn bộ 48 sản phẩm với các tính năng: lọc theo danh mục, lọc theo giới tính (Nam/Nữ/Unisex), tìm kiếm theo tên, phân trang 12 sản phẩm/trang.</p>
+    <p class="no-indent"><i>(Chụp screenshot tại: http://localhost:3000/cua-hang)</i></p>
+
+    <h3>4.1.3 Trang đăng nhập / Đăng ký</h3>
+    <p>Giao diện đăng nhập và đăng ký được thiết kế theo phong cách hiện đại với Bootstrap 5. Mật khẩu được mã hóa bằng bcrypt (salt rounds = 10) trước khi lưu vào CSDL. Hệ thống kiểm tra trùng tên đăng nhập và yêu cầu mật khẩu tối thiểu 6 ký tự.</p>
+
+    <h3>4.1.4 Giỏ hàng</h3>
+    <p>Giỏ hàng được lưu trữ trong Session (phía server), cho phép thêm sản phẩm, cập nhật số lượng, xóa sản phẩm. Khi thêm sản phẩm đã có trong giỏ, số lượng được cộng dồn tự động. Hệ thống kiểm tra tồn kho trước khi cho phép thêm.</p>
+
+    <h3>4.1.5 Đặt hàng & Thanh toán</h3>
+    <p>Quy trình đặt hàng sử dụng SQL Transaction để đảm bảo tính toàn vẹn dữ liệu:</p>
+    <ol>
+        <li>Hiển thị giỏ hàng + form thông tin giao hàng (họ tên, SĐT, địa chỉ).</li>
+        <li>Cho phép nhập mã giảm giá — hệ thống kiểm tra real-time (API) tính hợp lệ, hạn dùng, đơn tối thiểu.</li>
+        <li>Chọn phương thức thanh toán: Tiền mặt / Chuyển khoản / Thẻ.</li>
+        <li>Xử lý: Tạo/cập nhật khách hàng → Tạo đơn hàng → Tạo chi tiết đơn → Trừ tồn kho → Xóa giỏ hàng.</li>
+    </ol>
+
+    <h3>4.1.6 Đơn hàng của tôi</h3>
+    <p>Người dùng có thể xem danh sách tất cả đơn hàng đã đặt (phân trang 10 đơn/trang), xem chi tiết từng đơn, và hủy đơn ở trạng thái "Chờ xác nhận" (tự động hoàn lại tồn kho).</p>
+    <p>Đơn hàng có 5 trạng thái: Chờ xác nhận → Đã xác nhận → Đang giao → Đã giao / Đã hủy.</p>
+
+    <h3>4.1.7 Hồ sơ cá nhân</h3>
+    <p>Trang thông tin cá nhân cho phép người dùng cập nhật: họ tên, email, số điện thoại, địa chỉ, ngày sinh, giới tính, upload ảnh đại diện (hỗ trợ JPEG/PNG/GIF/WebP, tối đa 5MB). Đặc biệt, người dùng có thể nhập số đo hình thể (chiều cao, cân nặng, 3 vòng) để AI Chatbot tư vấn size chính xác.</p>
+    <p>Trang cũng hiển thị thống kê cá nhân: tổng đơn hàng, đơn hoàn thành, tổng chi tiêu.</p>
+
+    <h3>4.1.8 AI Chatbot tư vấn thời trang</h3>
+    <p>Chatbot AI là tính năng nổi bật được tích hợp dưới dạng widget nổi (floating) ở góc phải dưới màn hình. Chatbot hỗ trợ 8 loại ý định (intent):</p>
+    <table>
+        <tr><th>Tính năng</th><th>Mô tả</th></tr>
+        <tr><td>Gợi ý size</td><td>Tính toán từ số đo cơ thể → gợi ý size áo (XS–XXL) và size quần theo bảng size chuẩn. Sử dụng hệ thống chấm điểm (scoring) với trọng số: vòng ngực +3, vòng eo +2, cân nặng +2, chiều cao +1.</td></tr>
+        <tr><td>Gợi ý theo dáng người</td><td>Tính BMI → phân loại dáng (gầy/cân đối/đầy đặn) → đưa ra 5 mẹo chọn đồ + sản phẩm phù hợp từ DB.</td></tr>
+        <tr><td>Xu hướng thời trang</td><td>Giới thiệu 8 xu hướng thời trang 2026: Minimalist Chic, Streetwear & Y2K, Smart Casual, Athleisure, Cottagecore, Dark Academia, Denim-on-denim, Color Block.</td></tr>
+        <tr><td>Tìm kiếm sản phẩm</td><td>Tìm sản phẩm trong CSDL theo keyword + ưu tiên giới tính của user.</td></tr>
+        <tr><td>Thông tin shop</td><td>Trả lời câu hỏi về shop, giờ mở cửa, liên hệ.</td></tr>
+    </table>
+
+    <h2>4.2 Giao diện quản trị (Admin)</h2>
+
+    <h3>4.2.1 Dashboard tổng quan</h3>
+    <p>Trang Dashboard hiển thị 6 thẻ KPI (tổng sản phẩm, tổng đơn hàng, tổng khách hàng, tổng doanh thu, đơn chờ xử lý, SP hết hàng), biểu đồ doanh thu 7 ngày gần nhất (Chart.js), bảng 5 đơn hàng gần nhất, bảng 5 SP bán chạy nhất.</p>
+
+    <h3>4.2.2 Quản lý sản phẩm</h3>
+    <p>Hệ thống CRUD đầy đủ cho 48 sản phẩm thuộc 10 danh mục, phân thành 3 giới tính (16 SP Nam, 20 SP Nữ, 12 SP Unisex). Hỗ trợ upload hình ảnh qua Multer, tìm kiếm, lọc theo danh mục/giới tính, phân trang.</p>
+
+    <h3>4.2.3 Quản lý đơn hàng</h3>
+    <p>Admin có thể xem danh sách đơn hàng, tạo đơn mới, cập nhật trạng thái (5 bước), xem chi tiết đơn hàng và in hóa đơn (window.print).</p>
+
+    <h3>4.2.4 Quản lý nhập hàng</h3>
+    <p>Tạo phiếu nhập hàng từ nhà cung cấp, thêm nhiều sản phẩm cùng lúc, tự động cộng tồn kho khi tạo phiếu. Xem chi tiết và xóa phiếu nhập.</p>
+
+    <h3>4.2.5 Thống kê & Báo cáo</h3>
+    <p>Module thống kê toàn diện với khả năng lọc theo tháng/năm:</p>
+    <ul>
+        <li>Biểu đồ cột doanh thu 12 tháng (Chart.js).</li>
+        <li>Biểu đồ tròn doanh thu theo danh mục.</li>
+        <li>TOP 10 sản phẩm bán chạy trong tháng.</li>
+        <li>TOP 10 khách hàng theo chi tiêu.</li>
+        <li>Báo cáo tồn kho: 20 SP tồn kho thấp nhất (đánh dấu đỏ: hết hàng, vàng: sắp hết).</li>
+        <li>Nút "In báo cáo" — in toàn bộ trang thống kê (window.print + CSS @media print).</li>
+    </ul>
+
+    <h3>4.2.6 Tìm kiếm nâng cao</h3>
+    <p>Tìm kiếm toàn hệ thống qua 9 bảng dữ liệu: sản phẩm, đơn hàng, khách hàng, tài khoản, nhân viên, danh mục, mã giảm giá, liên hệ, phiếu nhập. Hỗ trợ lọc theo phạm vi (tất cả hoặc từng loại).</p>
+
+    <h3>4.2.7 Quản lý mã giảm giá</h3>
+    <p>Tạo, sửa, xóa mã giảm giá với 2 loại: phần trăm và số tiền cố định. Cài đặt: giá trị giảm, đơn tối thiểu, số lượng sử dụng, thời hạn bắt đầu/kết thúc.</p>
+
+    <h3>4.2.8 Quản lý liên hệ</h3>
+    <p>Xem danh sách tin nhắn liên hệ từ khách hàng. Admin có thể xem chi tiết và gửi phản hồi. Trạng thái tự động cập nhật: Chờ xử lý → Đã phản hồi.</p>
+
+    <h3>4.2.9 Cài đặt hệ thống</h3>
+    <p>Cấu hình: cài đặt đơn hàng và thiết lập thanh toán (upload ảnh QR chuyển khoản). Dữ liệu lưu dạng key-value trong bảng cai_dat.</p>
+</div>
+
+<!-- ==================== CHƯƠNG V ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG V: THỬ NGHIỆM VÀ ĐÁNH GIÁ</h1>
+
+    <h2>5.1 Ưu điểm</h2>
+    <ul>
+        <li>Hệ thống đầy đủ chức năng với 15 module route, 40 file template, hơn 7.300 dòng code.</li>
+        <li>Giao diện responsive, tương thích tốt trên máy tính, máy tính bảng và điện thoại nhờ Bootstrap 5.</li>
+        <li>Bảo mật tốt: mật khẩu mã hóa bcrypt, parameterized queries chống SQL Injection, phân quyền 3 cấp.</li>
+        <li>AI Chatbot tư vấn thời trang thông minh — tính năng nâng cao giúp trải nghiệm người dùng tốt hơn.</li>
+        <li>Hệ thống mã giảm giá linh hoạt (phần trăm/cố định, hạn dùng, đơn tối thiểu).</li>
+        <li>Dashboard trực quan với biểu đồ Chart.js, thống kê doanh thu đa chiều.</li>
+        <li>Đặt hàng sử dụng SQL Transaction đảm bảo tính toàn vẹn dữ liệu.</li>
+        <li>Tìm kiếm toàn hệ thống qua 9 bảng dữ liệu.</li>
+        <li>Quản lý nhập/xuất kho hoàn chỉnh.</li>
+    </ul>
+
+    <h2>5.2 Nhược điểm</h2>
+    <ul>
+        <li>Chatbot hoạt động dạng rule-based, chưa tích hợp AI thực sự (GPT, LLM), nên khả năng hiểu ngữ cảnh còn hạn chế.</li>
+        <li>Chưa có tính năng thanh toán trực tuyến (VNPay, MoMo, ZaloPay).</li>
+        <li>Chưa có chức năng xuất báo cáo ra file Excel/PDF (chỉ có in qua trình duyệt).</li>
+        <li>Giỏ hàng lưu trong Session — mất khi đóng trình duyệt hoặc hết session.</li>
+        <li>Chưa có hệ thống đánh giá/bình luận sản phẩm.</li>
+        <li>Chưa có tính năng gửi email thông báo (xác nhận đơn hàng, quên mật khẩu).</li>
+    </ul>
+</div>
+
+<!-- ==================== CHƯƠNG VI ==================== -->
+<div class="page page-break">
+    <h1 class="chapter">CHƯƠNG VI: KẾT LUẬN</h1>
+
+    <h2>6.1 Kết quả đạt được</h2>
+    <p>Sau quá trình nghiên cứu và phát triển, đồ án đã hoàn thành các mục tiêu đề ra:</p>
+    <ul>
+        <li>Xây dựng thành công website quản lý shop thời trang hoàn chỉnh với 2 phân hệ: quản trị (12 chức năng) và người dùng (9 chức năng).</li>
+        <li>Thiết kế cơ sở dữ liệu gồm 12 bảng với 11 mối quan hệ khóa ngoại, đảm bảo tính chuẩn hóa.</li>
+        <li>Tích hợp thành công AI Chatbot tư vấn thời trang với 8 loại ý định, gợi ý size dựa trên số đo cơ thể.</li>
+        <li>Hệ thống thống kê và báo cáo trực quan với Chart.js.</li>
+        <li>Tổng cộng hơn 7.300 dòng code (15 route files, 40 view templates).</li>
+    </ul>
+
+    <h2>6.2 Hướng phát triển trong tương lai</h2>
+    <ul>
+        <li><b>Tích hợp AI nâng cao:</b> Thay thế chatbot rule-based bằng Google Gemini API hoặc OpenAI GPT để hiểu ngữ cảnh tốt hơn.</li>
+        <li><b>Thanh toán trực tuyến:</b> Tích hợp cổng thanh toán VNPay, MoMo, ZaloPay cho trải nghiệm mua sắm tiện lợi hơn.</li>
+        <li><b>Ứng dụng di động:</b> Phát triển ứng dụng mobile (React Native) hoặc PWA cho khách hàng.</li>
+        <li><b>Xuất báo cáo:</b> Tích hợp xuất Excel (exceljs) và PDF (pdfkit) cho module thống kê.</li>
+        <li><b>Hệ thống đánh giá:</b> Cho phép khách hàng đánh giá và bình luận sản phẩm (star rating + review).</li>
+        <li><b>Email notification:</b> Gửi email xác nhận đơn hàng, cập nhật trạng thái, quên mật khẩu (Nodemailer + Gmail).</li>
+        <li><b>Real-time:</b> Tích hợp Socket.IO để thông báo đơn hàng mới cho admin theo thời gian thực.</li>
+        <li><b>Deploy cloud:</b> Triển khai trên Azure/AWS/Railway với database Azure SQL hoặc Neon PostgreSQL.</li>
+    </ul>
+
+    <h2>6.3 Kết luận</h2>
+    <p>Đồ án "Xây dựng Website Quản Lý Shop Thời Trang" đã hoàn thành đầy đủ các yêu cầu đặt ra, xây dựng một hệ thống web hoàn chỉnh phục vụ cho việc quản lý cửa hàng thời trang và mua sắm trực tuyến. Hệ thống sử dụng công nghệ Node.js, Express.js, EJS và SQL Server 2022 — những công nghệ hiện đại, phổ biến trong ngành phát triển web.</p>
+    <p>Đặc biệt, tính năng AI Chatbot tư vấn thời trang là điểm sáng của đồ án, thể hiện khả năng tích hợp trí tuệ nhân tạo vào ứng dụng thực tế, giúp nâng cao trải nghiệm người dùng và tạo ra giá trị khác biệt cho sản phẩm.</p>
+    <p>Mặc dù vẫn còn một số hạn chế cần khắc phục, đồ án đã đạt được mục tiêu ban đầu và có thể tiếp tục phát triển mở rộng trong tương lai.</p>
+</div>
+
+<!-- ==================== TÀI LIỆU THAM KHẢO ==================== -->
+<div class="page">
+    <h1 class="chapter">TÀI LIỆU THAM KHẢO</h1>
+    <ol class="ref-list">
+        <li>Express.js Official Documentation. <i>https://expressjs.com/</i>. Truy cập 2026.</li>
+        <li>Node.js Official Documentation. <i>https://nodejs.org/docs/</i>. Truy cập 2026.</li>
+        <li>Microsoft SQL Server 2022 Documentation. <i>https://learn.microsoft.com/en-us/sql/sql-server/</i>. Truy cập 2026.</li>
+        <li>EJS — Embedded JavaScript templating. <i>https://ejs.co/</i>. Truy cập 2026.</li>
+        <li>Bootstrap 5 Documentation. <i>https://getbootstrap.com/docs/5.3/</i>. Truy cập 2026.</li>
+        <li>Chart.js Documentation. <i>https://www.chartjs.org/docs/</i>. Truy cập 2026.</li>
+        <li>bcrypt.js — Optimized bcrypt in JavaScript. <i>https://github.com/dcodeIO/bcrypt.js</i>. Truy cập 2026.</li>
+        <li>mssql — Microsoft SQL Server client for Node.js. <i>https://github.com/tediousjs/node-mssql</i>. Truy cập 2026.</li>
+        <li>Multer — Node.js middleware for handling multipart/form-data. <i>https://github.com/expressjs/multer</i>. Truy cập 2026.</li>
+        <li>Font Awesome 6 Documentation. <i>https://fontawesome.com/docs</i>. Truy cập 2026.</li>
+    </ol>
+</div>
+
+</body>
+</html>

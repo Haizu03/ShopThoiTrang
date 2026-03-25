@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="fas fa-user-tie me-2"></i>Danh sách nhân viên</h5>
+    <a href="/nhan-vien/them" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Thêm nhân viên</a>
+</div>
+
+<div class="table-container mb-3">
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <input type="text" name="search" class="form-control" placeholder="Tìm tên, mã NV, SĐT ..." value="<%= search %>">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Tìm</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Mã NV</th>
+                    <th>Họ tên</th>
+                    <th>Số ĐT</th>
+                    <th>Email</th>
+                    <th>Chức vụ</th>
+                    <th>Lương</th>
+                    <th>Tài khoản</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (nhanViens.length > 0) { %>
+                    <% nhanViens.forEach(nv => { %>
+                        <tr>
+                            <td><strong><%= nv.ma_nv %></strong></td>
+                            <td><%= nv.ho_ten %></td>
+                            <td><%= nv.so_dien_thoai || '---' %></td>
+                            <td><%= nv.email || '---' %></td>
+                            <td><%= nv.chuc_vu || '---' %></td>
+                            <td class="price"><%= Number(nv.luong).toLocaleString('vi-VN') %>đ</td>
+                            <td><%= nv.ten_dang_nhap || '<span class="text-muted">Chưa có</span>' %></td>
+                            <td>
+                                <a href="/nhan-vien/sua/<%= nv.id %>" class="btn btn-sm btn-warning btn-action" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="confirmDelete('/nhan-vien/xoa/<%= nv.id %>', '<%= nv.ho_ten %>')" class="btn btn-sm btn-danger btn-action" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr><td colspan="8" class="text-center text-muted py-4">Không có nhân viên</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>

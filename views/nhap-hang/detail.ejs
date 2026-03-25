@@ -1,0 +1,36 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5><i class="fas fa-file-alt me-2"></i>Phiếu nhập: <%= phieu.ma_phieu %></h5>
+                <a href="/nhap-hang" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+            </div>
+            <table class="table table-borderless table-sm mb-4">
+                <tr><td class="fw-bold" width="150">Mã phiếu:</td><td><%= phieu.ma_phieu %></td></tr>
+                <tr><td class="fw-bold">Nhà cung cấp:</td><td><%= phieu.nha_cung_cap || '---' %></td></tr>
+                <tr><td class="fw-bold">Nhân viên:</td><td><%= phieu.ten_nv || '---' %></td></tr>
+                <tr><td class="fw-bold">Ngày nhập:</td><td><%= new Date(phieu.ngay_nhap).toLocaleString('vi-VN') %></td></tr>
+                <tr><td class="fw-bold">Ghi chú:</td><td><%= phieu.ghi_chu || '---' %></td></tr>
+            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead><tr><th>#</th><th>Mã SP</th><th>Tên SP</th><th class="text-end">Đơn giá</th><th class="text-center">SL</th><th class="text-end">Thành tiền</th></tr></thead>
+                    <tbody>
+                        <% chiTiets.forEach((ct, i) => { %>
+                            <tr>
+                                <td><%= i+1 %></td><td><%= ct.ma_sp %></td><td><%= ct.ten_sp %></td>
+                                <td class="text-end"><%= Number(ct.don_gia).toLocaleString('vi-VN') %>đ</td>
+                                <td class="text-center"><%= ct.so_luong %></td>
+                                <td class="text-end price"><%= Number(ct.thanh_tien).toLocaleString('vi-VN') %>đ</td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="5" class="text-end fw-bold">Tổng cộng:</td>
+                        <td class="text-end price fw-bold"><%= Number(phieu.tong_tien).toLocaleString('vi-VN') %>đ</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

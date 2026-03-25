@@ -1,0 +1,104 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="fas fa-tags me-2"></i>Quản lý danh mục</h5>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="fas fa-plus me-1"></i>Thêm danh mục
+    </button>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Số sản phẩm</th>
+                    <th>Ngày tạo</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (danhMucs.length > 0) { %>
+                    <% danhMucs.forEach((dm, i) => { %>
+                        <tr>
+                            <td><%= i + 1 %></td>
+                            <td><strong><%= dm.ten_danh_muc %></strong></td>
+                            <td><%= dm.mo_ta || '---' %></td>
+                            <td><span class="badge bg-primary"><%= dm.so_san_pham %></span></td>
+                            <td><%= new Date(dm.ngay_tao).toLocaleDateString('vi-VN') %></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning btn-action" 
+                                    data-bs-toggle="modal" data-bs-target="#editModal<%= dm.id %>" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="confirmDelete('/danh-muc/xoa/<%= dm.id %>', '<%= dm.ten_danh_muc %>')" 
+                                    class="btn btn-sm btn-danger btn-action" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <!-- Modal Sửa -->
+                                <div class="modal fade" id="editModal<%= dm.id %>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="/danh-muc/sua/<%= dm.id %>" method="POST">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Sửa danh mục</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Tên danh mục</label>
+                                                        <input type="text" name="ten_danh_muc" class="form-control" value="<%= dm.ten_danh_muc %>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Mô tả</label>
+                                                        <textarea name="mo_ta" class="form-control" rows="2"><%= dm.mo_ta || '' %></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr><td colspan="6" class="text-center text-muted py-4">Chưa có danh mục nào</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Thêm -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/danh-muc/them" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm danh mục mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                        <input type="text" name="ten_danh_muc" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea name="mo_ta" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

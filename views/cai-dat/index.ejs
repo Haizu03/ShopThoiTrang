@@ -1,0 +1,169 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-cog me-2"></i>Cài đặt hệ thống</h2>
+</div>
+
+<% if (messages.success) { %>
+    <div class="alert alert-success alert-dismissible fade show"><%= messages.success %><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<% } %>
+<% if (messages.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show"><%= messages.error %><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<% } %>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-donhang" type="button"><i class="fas fa-shopping-cart me-1"></i>Đơn hàng & Vận chuyển</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-thanhtoan" type="button"><i class="fas fa-credit-card me-1"></i>Thanh toán & Ngân hàng</button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- Tab 1: Don hang & Van chuyen -->
+    <div class="tab-pane fade show active" id="tab-donhang">
+        <form action="/cai-dat/don-hang" method="POST">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-truck text-primary me-2"></i>Phí vận chuyển</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Phí vận chuyển tiêu chuẩn (VNĐ)</label>
+                                <input type="number" name="phi_van_chuyen" class="form-control" value="<%= settings.phi_van_chuyen || '0' %>" min="0">
+                                <small class="text-muted">Để 0 nếu miễn phí vận chuyển tất cả</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-bolt text-warning me-1"></i>Phí giao hàng hỏa tốc (VNĐ)</label>
+                                <input type="number" name="phi_hoa_toc" class="form-control" value="<%= settings.phi_hoa_toc || '30000' %>" min="0">
+                                <small class="text-muted">Phí phụ thu khi khách chọn giao hỏa tốc</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Miễn phí vận chuyển từ (VNĐ)</label>
+                                <input type="number" name="giao_hang_mien_phi_tu" class="form-control" value="<%= settings.giao_hang_mien_phi_tu || '500000' %>" min="0">
+                                <small class="text-muted">Đơn hàng từ số tiền này được miễn phí ship. Để 0 để tắt</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-clipboard-list text-info me-2"></i>Cài đặt đơn hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tự động hủy đơn sau (giờ)</label>
+                                <input type="number" name="don_hang_tu_dong_huy" class="form-control" value="<%= settings.don_hang_tu_dong_huy || '24' %>" min="1">
+                                <small class="text-muted">Đơn hàng chưa xử lý sẽ tự động huỷ sau thời gian này</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Thông báo sau khi đặt hàng</label>
+                                <textarea name="thong_bao_don_hang" class="form-control" rows="3"><%= settings.thong_bao_don_hang || '' %></textarea>
+                                <small class="text-muted">Nội dung hiển thị khi khách đặt hàng thành công</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end mb-4">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-2"></i>Lưu cài đặt đơn hàng</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tab 2: Thanh toan & Ngan hang -->
+    <div class="tab-pane fade" id="tab-thanhtoan">
+        <form action="/cai-dat/thanh-toan" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-money-check-alt text-success me-2"></i>Phương thức thanh toán</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="cho_phep_cod" value="1" id="sw_cod" <%= settings.cho_phep_cod === '1' ? 'checked' : '' %>>
+                                <label class="form-check-label fw-semibold" for="sw_cod"><i class="fas fa-hand-holding-usd me-1 text-warning"></i>Thanh toán khi nhận hàng (COD)</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="cho_phep_chuyen_khoan" value="1" id="sw_ck" <%= settings.cho_phep_chuyen_khoan === '1' ? 'checked' : '' %>>
+                                <label class="form-check-label fw-semibold" for="sw_ck"><i class="fas fa-university me-1 text-primary"></i>Chuyển khoản ngân hàng</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="cho_phep_the" value="1" id="sw_the" <%= settings.cho_phep_the === '1' ? 'checked' : '' %>>
+                                <label class="form-check-label fw-semibold" for="sw_the"><i class="fas fa-credit-card me-1 text-info"></i>Thanh toán bằng thẻ</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-university text-primary me-2"></i>Thông tin ngân hàng chuyển khoản</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Tên ngân hàng</label>
+                                <input type="text" name="ngan_hang_ten" class="form-control" value="<%= settings.ngan_hang_ten || '' %>" placeholder="VD: Vietcombank, MB Bank, ...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Số tài khoản</label>
+                                <input type="text" name="ngan_hang_so_tk" class="form-control" value="<%= settings.ngan_hang_so_tk || '' %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Chủ tài khoản</label>
+                                <input type="text" name="ngan_hang_chu_tk" class="form-control" value="<%= settings.ngan_hang_chu_tk || '' %>">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Chi nhánh</label>
+                                <input type="text" name="ngan_hang_chi_nhanh" class="form-control" value="<%= settings.ngan_hang_chi_nhanh || '' %>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hinh QR -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-qrcode text-dark me-2"></i>Mã QR chuyển khoản ngân hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Upload ảnh QR ngân hàng</label>
+                                        <input type="file" name="ngan_hang_hinh_qr" class="form-control" accept="image/*">
+                                        <small class="text-muted">Chấp nhận: JPG, PNG, GIF, WEBP (tối đa 5MB)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <% if (settings.ngan_hang_hinh_qr) { %>
+                                        <div class="border rounded p-3 d-inline-block" style="background: #f8f9fa;">
+                                            <img src="<%= settings.ngan_hang_hinh_qr %>" alt="QR Ngân hàng" style="max-height: 250px; max-width: 100%;" class="rounded">
+                                            <p class="mt-2 mb-0 text-muted small">Ảnh QR hiện tại</p>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="border rounded p-4 d-inline-block" style="background: #f8f9fa;">
+                                            <i class="fas fa-qrcode fa-4x text-muted"></i>
+                                            <p class="mt-2 mb-0 text-muted">Chưa có ảnh QR</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mb-4">
+                <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-save me-2"></i>Lưu cài đặt thanh toán</button>
+            </div>
+        </form>
+    </div>
+</div>

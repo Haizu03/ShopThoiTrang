@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="fas fa-box me-2"></i>Danh sách sản phẩm</h5>
+    <a href="/san-pham/them" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Thêm sản phẩm
+    </a>
+</div>
+
+<!-- Bộ lọc -->
+<div class="table-container mb-3">
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Tìm kiếm</label>
+            <input type="text" name="search" class="form-control" placeholder="Mã SP, tên SP ..." value="<%= search %>">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Danh mục</label>
+            <select name="danh_muc" class="form-select">
+                <option value="">-- Tất cả --</option>
+                <% danhMucs.forEach(dm => { %>
+                    <option value="<%= dm.id %>" <%= danhMucId == dm.id ? 'selected' : '' %>><%= dm.ten_danh_muc %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Lọc</button>
+        </div>
+    </form>
+</div>
+
+<!-- Bảng sản phẩm -->
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Hình</th>
+                    <th>Mã SP</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <th>Kích thước</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (sanPhams.length > 0) { %>
+                    <% sanPhams.forEach(sp => { %>
+                        <tr>
+                            <td>
+                                <% if (sp.hinh_anh) { %>
+                                    <img src="<%= sp.hinh_anh %>" class="product-img" alt="">
+                                <% } else { %>
+                                    <div class="product-img bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                <% } %>
+                            </td>
+                            <td><strong><%= sp.ma_sp %></strong></td>
+                            <td><a href="/san-pham/<%= sp.id %>"><%= sp.ten_sp %></a></td>
+                            <td><%= sp.ten_danh_muc || '---' %></td>
+                            <td class="price"><%= Number(sp.gia_ban).toLocaleString('vi-VN') %>đ</td>
+                            <td>
+                                <% if (sp.so_luong <= 0) { %>
+                                    <span class="badge bg-danger">Hết hàng</span>
+                                <% } else if (sp.so_luong <= 10) { %>
+                                    <span class="badge bg-warning text-dark"><%= sp.so_luong %></span>
+                                <% } else { %>
+                                    <span class="badge bg-success"><%= sp.so_luong %></span>
+                                <% } %>
+                            </td>
+                            <td><%= sp.kich_thuoc || '---' %></td>
+                            <td>
+                                <a href="/san-pham/<%= sp.id %>" class="btn btn-sm btn-info btn-action" title="Chi tiết">
+                                    <i class="fas fa-eye text-white"></i>
+                                </a>
+                                <a href="/san-pham/sua/<%= sp.id %>" class="btn btn-sm btn-warning btn-action" title="Sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="confirmDelete('/san-pham/xoa/<%= sp.id %>', '<%= sp.ten_sp %>')" class="btn btn-sm btn-danger btn-action" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr><td colspan="8" class="text-center text-muted py-4">Không có sản phẩm nào</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <%- include('../partials/pagination') %>
+</div>

@@ -1,0 +1,165 @@
+<!-- Bộ lọc -->
+<div class="search-section mb-4">
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-2">
+            <label class="form-label">Tháng</label>
+            <select name="thang" class="form-select">
+                <% for (let i = 1; i <= 12; i++) { %>
+                    <option value="<%= i %>" <%= thang === i ? 'selected' : '' %>>Tháng <%= i %></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Năm</label>
+            <select name="nam" class="form-select">
+                <% for (let y = 2024; y <= 2027; y++) { %>
+                    <option value="<%= y %>" <%= nam === y ? 'selected' : '' %>><%= y %></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i>Lọc</button>
+        </div>
+        <div class="col-md-6 text-end">
+            <button onclick="window.print()" class="btn btn-outline-primary no-print"><i class="fas fa-print me-1"></i>In báo cáo</button>
+        </div>
+    </form>
+</div>
+
+<!-- Doanh thu tháng -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="stat-card text-center">
+            <div class="icon bg-success mx-auto mb-2"><i class="fas fa-money-bill-wave"></i></div>
+            <h3><%= Number(dtThangNay).toLocaleString('vi-VN') %>đ</h3>
+            <p>Doanh thu tháng <%= thang %>/<%= nam %></p>
+        </div>
+    </div>
+    <div class="col-md-8 mb-3">
+        <div class="chart-container">
+            <h6><i class="fas fa-chart-bar me-2"></i>Doanh thu theo tháng - Năm <%= nam %></h6>
+            <canvas id="monthlyRevenueChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Doanh thu danh mục & Biểu đồ -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="chart-container">
+            <h6><i class="fas fa-chart-pie me-2"></i>Doanh thu theo danh mục - Năm <%= nam %></h6>
+            <canvas id="categoryChart" height="250"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="table-container">
+            <h6><i class="fas fa-crown me-2"></i>Khách hàng mua nhiều nhất</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead><tr><th>#</th><th>Khách hàng</th><th>SĐT</th><th>Số đơn</th><th>Tổng chi</th></tr></thead>
+                    <tbody>
+                        <% topKhachHang.forEach((kh, i) => { %>
+                            <tr>
+                                <td><%= i+1 %></td>
+                                <td><%= kh.ho_ten %></td>
+                                <td><%= kh.so_dien_thoai || '' %></td>
+                                <td><%= kh.so_don %></td>
+                                <td class="price"><%= Number(kh.tong_chi).toLocaleString('vi-VN') %>đ</td>
+                            </tr>
+                        <% }); %>
+                        <% if (topKhachHang.length === 0) { %><tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr><% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sản phẩm bán chạy -->
+<div class="table-container mb-4">
+    <h6><i class="fas fa-fire me-2"></i>Top sản phẩm bán chạy - Tháng <%= thang %>/<%= nam %></h6>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>#</th><th>Mã SP</th><th>Tên sản phẩm</th><th>Giá bán</th><th>SL bán</th><th>Doanh thu</th></tr></thead>
+            <tbody>
+                <% spBanChay.forEach((sp, i) => { %>
+                    <tr>
+                        <td><%= i+1 %></td>
+                        <td><%= sp.ma_sp %></td>
+                        <td><%= sp.ten_sp %></td>
+                        <td><%= Number(sp.gia_ban).toLocaleString('vi-VN') %>đ</td>
+                        <td><span class="badge bg-primary"><%= sp.tong_ban %></span></td>
+                        <td class="price"><%= Number(sp.tong_doanh_thu).toLocaleString('vi-VN') %>đ</td>
+                    </tr>
+                <% }); %>
+                <% if (spBanChay.length === 0) { %><tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td></tr><% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tồn kho -->
+<div class="table-container">
+    <h6><i class="fas fa-warehouse me-2"></i>Báo cáo tồn kho</h6>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead><tr><th>Mã SP</th><th>Tên SP</th><th>Danh mục</th><th>Tồn kho</th><th>Giá nhập</th><th>Giá trị tồn</th></tr></thead>
+            <tbody>
+                <% tonKho.forEach(sp => { %>
+                    <tr class="<%= sp.so_luong <= 0 ? 'table-danger' : sp.so_luong <= 5 ? 'table-warning' : '' %>">
+                        <td><%= sp.ma_sp %></td>
+                        <td><%= sp.ten_sp %></td>
+                        <td><%= sp.ten_danh_muc || '---' %></td>
+                        <td>
+                            <% if (sp.so_luong <= 0) { %><span class="badge bg-danger">Hết hàng</span>
+                            <% } else { %><%= sp.so_luong %><% } %>
+                        </td>
+                        <td><%= Number(sp.gia_nhap).toLocaleString('vi-VN') %>đ</td>
+                        <td class="price"><%= Number(sp.gia_tri_ton).toLocaleString('vi-VN') %>đ</td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Biểu đồ doanh thu theo tháng
+const monthlyData = <%- JSON.stringify(doanhThuThang) %>;
+const monthLabels = Array.from({length: 12}, (_, i) => 'T' + (i+1));
+const monthValues = Array(12).fill(0);
+monthlyData.forEach(d => { monthValues[d.thang - 1] = d.doanh_thu; });
+
+new Chart(document.getElementById('monthlyRevenueChart'), {
+    type: 'bar',
+    data: {
+        labels: monthLabels,
+        datasets: [{
+            label: 'Doanh thu (VNĐ)',
+            data: monthValues,
+            backgroundColor: monthValues.map((_, i) => i === (<%= thang %> - 1) ? '#6c5ce7' : 'rgba(108,92,231,0.3)'),
+            borderRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, ticks: { callback: v => (v/1000000).toFixed(0) + 'tr' } } }
+    }
+});
+
+// Biểu đồ danh mục
+const catData = <%- JSON.stringify(doanhThuDanhMuc) %>;
+if (catData.length > 0) {
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: catData.map(d => d.ten_danh_muc),
+            datasets: [{
+                data: catData.map(d => d.doanh_thu),
+                backgroundColor: ['#6c5ce7','#00b894','#fdcb6e','#e17055','#0984e3','#d63031','#00cec9']
+            }]
+        },
+        options: { responsive: true }
+    });
+}
+</script>

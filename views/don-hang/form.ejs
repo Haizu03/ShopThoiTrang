@@ -1,0 +1,153 @@
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="form-container">
+            <h5 class="mb-4"><i class="fas fa-plus me-2"></i>Tạo đơn hàng mới</h5>
+
+            <form action="/don-hang/tao" method="POST" id="orderForm">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Mã đơn hàng</label>
+                        <input type="text" name="ma_dh" class="form-control" value="<%= maDH %>" required readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Khách hàng</label>
+                        <select name="khach_hang_id" class="form-select">
+                            <option value="">Khách lẻ</option>
+                            <% khachHangs.forEach(kh => { %>
+                                <option value="<%= kh.id %>"><%= kh.ho_ten %> - <%= kh.so_dien_thoai || '' %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nhân viên bán</label>
+                        <select name="nhan_vien_id" class="form-select">
+                            <option value="">-- Chọn --</option>
+                            <% nhanViens.forEach(nv => { %>
+                                <option value="<%= nv.id %>"><%= nv.ho_ten %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Phương thức TT</label>
+                        <select name="phuong_thuc_tt" class="form-select">
+                            <option value="tien_mat">Tiền mặt</option>
+                            <option value="chuyen_khoan">Chuyển khoản</option>
+                            <option value="the">Thẻ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="mb-3">Danh sách sản phẩm</h6>
+                <div id="productList">
+                    <div class="row mb-2 product-row align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label">Sản phẩm</label>
+                            <select name="san_pham_ids" class="form-select sp-select" required onchange="updatePrice(this)">
+                                <option value="">-- Chọn sản phẩm --</option>
+                                <% sanPhams.forEach(sp => { %>
+                                    <option value="<%= sp.id %>" data-gia="<%= sp.gia_ban %>" data-ton="<%= sp.so_luong %>">
+                                        <%= sp.ma_sp %> - <%= sp.ten_sp %> (Giá: <%= Number(sp.gia_ban).toLocaleString('vi-VN') %>đ, Tồn: <%= sp.so_luong %>)
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Số lượng</label>
+                            <input type="number" name="so_luongs" class="form-control sl-input" value="1" min="1" required onchange="calcTotal()">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Đơn giá</label>
+                            <input type="text" class="form-control gia-display" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="addProductRow()">
+                    <i class="fas fa-plus me-1"></i>Thêm sản phẩm
+                </button>
+
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Giảm giá (VNĐ)</label>
+                        <input type="number" name="giam_gia" class="form-control" value="0" min="0" onchange="calcTotal()">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Tổng tiền</label>
+                        <div class="h4 price" id="tongTien">0đ</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ghi chú</label>
+                    <textarea name="ghi_chu" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Tạo đơn hàng</button>
+                    <a href="/don-hang" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const productOptions = `<option value="">-- Chọn sản phẩm --</option>
+<% sanPhams.forEach(sp => { %>
+<option value="<%= sp.id %>" data-gia="<%= sp.gia_ban %>" data-ton="<%= sp.so_luong %>"><%= sp.ma_sp %> - <%= sp.ten_sp %> (Giá: <%= Number(sp.gia_ban).toLocaleString('vi-VN') %>đ, Tồn: <%= sp.so_luong %>)</option>
+<% }); %>`;
+
+function addProductRow() {
+    const row = document.createElement('div');
+    row.className = 'row mb-2 product-row align-items-end';
+    row.innerHTML = `
+        <div class="col-md-5">
+            <select name="san_pham_ids" class="form-select sp-select" required onchange="updatePrice(this)">${productOptions}</select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="so_luongs" class="form-control sl-input" value="1" min="1" required onchange="calcTotal()">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control gia-display" readonly>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger" onclick="removeRow(this)"><i class="fas fa-times"></i></button>
+        </div>`;
+    document.getElementById('productList').appendChild(row);
+}
+
+function removeRow(btn) {
+    const rows = document.querySelectorAll('.product-row');
+    if (rows.length > 1) {
+        btn.closest('.product-row').remove();
+        calcTotal();
+    }
+}
+
+function updatePrice(select) {
+    const row = select.closest('.product-row');
+    const option = select.options[select.selectedIndex];
+    const gia = option.dataset.gia || 0;
+    row.querySelector('.gia-display').value = Number(gia).toLocaleString('vi-VN') + 'đ';
+    row.querySelector('.sl-input').max = option.dataset.ton || 999;
+    calcTotal();
+}
+
+function calcTotal() {
+    let total = 0;
+    document.querySelectorAll('.product-row').forEach(row => {
+        const select = row.querySelector('.sp-select');
+        const sl = parseInt(row.querySelector('.sl-input').value) || 0;
+        const gia = parseFloat(select.options[select.selectedIndex]?.dataset?.gia) || 0;
+        total += gia * sl;
+    });
+    const giamGia = parseFloat(document.querySelector('[name="giam_gia"]').value) || 0;
+    document.getElementById('tongTien').textContent = (total - giamGia).toLocaleString('vi-VN') + 'đ';
+}
+</script>

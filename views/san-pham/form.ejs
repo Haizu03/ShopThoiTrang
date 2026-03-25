@@ -1,0 +1,90 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-container">
+            <h5 class="mb-4">
+                <i class="fas fa-<%= sanPham ? 'edit' : 'plus' %> me-2"></i>
+                <%= sanPham ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới' %>
+            </h5>
+
+            <form action="/san-pham/<%= sanPham ? 'sua/' + sanPham.id : 'them' %>" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mã sản phẩm <span class="text-danger">*</span></label>
+                        <input type="text" name="ma_sp" class="form-control" value="<%= sanPham ? sanPham.ma_sp : '' %>" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input type="text" name="ten_sp" class="form-control" value="<%= sanPham ? sanPham.ten_sp : '' %>" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Danh mục</label>
+                        <select name="danh_muc_id" class="form-select">
+                            <option value="">-- Chọn danh mục --</option>
+                            <% danhMucs.forEach(dm => { %>
+                                <option value="<%= dm.id %>" <%= (sanPham && sanPham.danh_muc_id == dm.id) ? 'selected' : '' %>><%= dm.ten_danh_muc %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giới tính</label>
+                        <select name="gioi_tinh" class="form-select">
+                            <% ['Nam', 'Nữ', 'Unisex'].forEach(gt => { %>
+                                <option value="<%= gt %>" <%= (sanPham && sanPham.gioi_tinh === gt) ? 'selected' : '' %>><%= gt %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Chất liệu</label>
+                        <input type="text" name="chat_lieu" class="form-control" value="<%= sanPham ? sanPham.chat_lieu || '' : '' %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giá nhập</label>
+                        <input type="number" name="gia_nhap" class="form-control" value="<%= sanPham ? sanPham.gia_nhap : 0 %>" min="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giá bán</label>
+                        <input type="number" name="gia_ban" class="form-control" value="<%= sanPham ? sanPham.gia_ban : 0 %>" min="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" name="so_luong" class="form-control" value="<%= sanPham ? sanPham.so_luong : 0 %>" min="0">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kích thước</label>
+                        <select name="kich_thuoc" class="form-select">
+                            <option value="">-- Chọn --</option>
+                            <% ['XS','S','M','L','XL','XXL','Free'].forEach(size => { %>
+                                <option value="<%= size %>" <%= (sanPham && sanPham.kich_thuoc === size) ? 'selected' : '' %>><%= size %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Màu sắc</label>
+                        <input type="text" name="mau_sac" class="form-control" value="<%= sanPham ? sanPham.mau_sac || '' : '' %>">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh</label>
+                    <input type="file" name="hinh_anh" class="form-control" accept="image/*">
+                    <% if (sanPham && sanPham.hinh_anh) { %>
+                        <img src="<%= sanPham.hinh_anh %>" class="mt-2" width="100" alt="">
+                    <% } %>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea name="mo_ta" class="form-control" rows="3"><%= sanPham ? sanPham.mo_ta || '' : '' %></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Lưu</button>
+                    <a href="/san-pham" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

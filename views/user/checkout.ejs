@@ -1,0 +1,280 @@
+<h4 class="section-heading"><i class="fas fa-credit-card me-2"></i>Đặt hàng</h4>
+
+<%
+    const s = typeof settings !== 'undefined' ? settings : {};
+    const phiVanChuyen = parseInt(s.phi_van_chuyen) || 0;
+    const phiHoaToc = parseInt(s.phi_hoa_toc) || 30000;
+    const mienPhiTu = parseInt(s.giao_hang_mien_phi_tu) || 0;
+    const choPhepCOD = s.cho_phep_cod !== '0';
+    const choPhepCK = s.cho_phep_chuyen_khoan !== '0';
+    const choPhepThe = s.cho_phep_the !== '0';
+%>
+
+<form action="/dat-hang" method="POST" id="checkoutForm">
+    <div class="row">
+        <!-- Thong tin giao hang -->
+        <div class="col-lg-7 mb-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Thông tin giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Họ tên người nhận <span class="text-danger">*</span></label>
+                        <input type="text" name="ho_ten" class="form-control" value="<%= user.ho_ten %>" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="text" name="so_dien_thoai" class="form-control" value="<%= typeof userProfile !== 'undefined' && userProfile.so_dien_thoai ? userProfile.so_dien_thoai : '' %>" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" class="form-control" value="<%= typeof userProfile !== 'undefined' && userProfile.email ? userProfile.email : '' %>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                        <textarea name="dia_chi" class="form-control" rows="2" required><%= typeof userProfile !== 'undefined' && userProfile.dia_chi ? userProfile.dia_chi : '' %></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Ghi chú</label>
+                        <textarea name="ghi_chu" class="form-control" rows="2" placeholder="Ghi chú đơn hàng (không bắt buộc)"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phuong thuc van chuyen -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-shipping-fast me-2"></i>Phương thức vận chuyển</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check border rounded p-3 mb-2" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="loai_van_chuyen" id="vc_tieu_chuan" value="tieu_chuan" checked onchange="updateShipping()">
+                        <label class="form-check-label w-100 d-flex justify-content-between" for="vc_tieu_chuan" style="cursor: pointer;">
+                            <span><i class="fas fa-truck text-primary me-2"></i><strong>Giao hàng tiêu chuẩn</strong> <small class="text-muted">(3-5 ngày)</small></span>
+                            <span class="fw-bold" id="label_phi_tc"><%= phiVanChuyen > 0 ? Number(phiVanChuyen).toLocaleString('vi-VN') + 'đ' : 'Miễn phí' %></span>
+                        </label>
+                    </div>
+                    <div class="form-check border rounded p-3" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="loai_van_chuyen" id="vc_hoa_toc" value="hoa_toc" onchange="updateShipping()">
+                        <label class="form-check-label w-100 d-flex justify-content-between" for="vc_hoa_toc" style="cursor: pointer;">
+                            <span><i class="fas fa-bolt text-warning me-2"></i><strong>Giao hỏa tốc</strong> <small class="text-muted">(1-2 ngày)</small></span>
+                            <span class="fw-bold text-danger"><%= Number(phiHoaToc).toLocaleString('vi-VN') %>đ</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phuong thuc thanh toan -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-wallet me-2"></i>Phương thức thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <% if (choPhepCOD) { %>
+                    <div class="form-check border rounded p-3 mb-2" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="phuong_thuc_tt" id="pt_cod" value="tien_mat" checked onchange="toggleBankInfo()">
+                        <label class="form-check-label w-100" for="pt_cod" style="cursor: pointer;">
+                            <i class="fas fa-hand-holding-usd text-warning me-2"></i><strong>Thanh toán khi nhận hàng (COD)</strong>
+                            <br><small class="text-muted">Trả tiền mặt khi nhận được hàng</small>
+                        </label>
+                    </div>
+                    <% } %>
+                    <% if (choPhepCK) { %>
+                    <div class="form-check border rounded p-3 mb-2" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="phuong_thuc_tt" id="pt_ck" value="chuyen_khoan" <%= !choPhepCOD ? 'checked' : '' %> onchange="toggleBankInfo()">
+                        <label class="form-check-label w-100" for="pt_ck" style="cursor: pointer;">
+                            <i class="fas fa-university text-primary me-2"></i><strong>Chuyển khoản ngân hàng</strong>
+                            <br><small class="text-muted">Chuyển khoản trước, giao hàng sau</small>
+                        </label>
+                    </div>
+                    <% } %>
+                    <% if (choPhepThe) { %>
+                    <div class="form-check border rounded p-3" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="phuong_thuc_tt" id="pt_the" value="the" onchange="toggleBankInfo()">
+                        <label class="form-check-label w-100" for="pt_the" style="cursor: pointer;">
+                            <i class="fas fa-credit-card text-info me-2"></i><strong>Thanh toán bằng thẻ</strong>
+                            <br><small class="text-muted">Visa, MasterCard, JCB</small>
+                        </label>
+                    </div>
+                    <% } %>
+
+                    <!-- Thong tin chuyen khoan -->
+                    <div id="bankInfo" style="display: none;" class="mt-3">
+                        <div class="alert alert-info mb-0">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-1"></i>Thông tin chuyển khoản</h6>
+                            <div class="row">
+                                <div class="<%= s.ngan_hang_hinh_qr ? 'col-md-7' : 'col-12' %>">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tr><td class="text-muted" style="width:130px;">Ngân hàng:</td><td class="fw-bold"><%= s.ngan_hang_ten || 'Chưa cài đặt' %></td></tr>
+                                        <tr><td class="text-muted">Số tài khoản:</td><td class="fw-bold"><%= s.ngan_hang_so_tk || '' %></td></tr>
+                                        <tr><td class="text-muted">Chủ tài khoản:</td><td class="fw-bold"><%= s.ngan_hang_chu_tk || '' %></td></tr>
+                                        <% if (s.ngan_hang_chi_nhanh) { %>
+                                        <tr><td class="text-muted">Chi nhánh:</td><td class="fw-bold"><%= s.ngan_hang_chi_nhanh %></td></tr>
+                                        <% } %>
+                                    </table>
+                                    <small class="text-danger d-block mt-2"><i class="fas fa-exclamation-triangle me-1"></i>Vui lòng ghi <strong>mã đơn hàng</strong> vào nội dung chuyển khoản.</small>
+                                </div>
+                                <% if (s.ngan_hang_hinh_qr) { %>
+                                <div class="col-md-5 text-center">
+                                    <img src="<%= s.ngan_hang_hinh_qr %>" alt="QR chuyển khoản" style="max-height: 200px; max-width: 100%;" class="rounded border">
+                                    <small class="d-block text-muted mt-1">Quét mã QR để chuyển khoản</small>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Don hang -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm" style="position: sticky; top: 20px;">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng (<%= gioHang.length %> sản phẩm)</h5>
+                </div>
+                <div class="card-body">
+                    <% let tongTien = 0; %>
+                    <% gioHang.forEach(item => { %>
+                        <% const thanhTien = item.gia_ban * item.so_luong; tongTien += thanhTien; %>
+                        <div class="d-flex align-items-center mb-3">
+                            <% if (item.hinh_anh) { %>
+                                <img src="<%= item.hinh_anh %>" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                            <% } else { %>
+                                <img src="/images/no-image.svg" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                            <% } %>
+                            <div class="flex-grow-1">
+                                <p class="mb-0 fw-semibold" style="font-size: 0.9rem;"><%= item.ten_sp %></p>
+                                <small class="text-muted">x<%= item.so_luong %></small>
+                            </div>
+                            <span class="fw-semibold text-nowrap"><%= Number(thanhTien).toLocaleString('vi-VN') %>đ</span>
+                        </div>
+                    <% }); %>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span><%= Number(tongTien).toLocaleString('vi-VN') %>đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí vận chuyển:</span>
+                        <span id="phi_ship_display" class="text-success">
+                            <% if (mienPhiTu > 0 && tongTien >= mienPhiTu) { %>
+                                Miễn phí
+                            <% } else if (phiVanChuyen > 0) { %>
+                                <%= Number(phiVanChuyen).toLocaleString('vi-VN') %>đ
+                            <% } else { %>
+                                Miễn phí
+                            <% } %>
+                        </span>
+                    </div>
+                    <% if (mienPhiTu > 0 && tongTien >= mienPhiTu) { %>
+                    <div class="text-center mb-2">
+                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Miễn phí ship cho đơn từ <%= Number(mienPhiTu).toLocaleString('vi-VN') %>đ</span>
+                    </div>
+                    <% } %>
+
+                    <!-- Ma giam gia -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small"><i class="fas fa-ticket-alt me-1"></i>Mã giảm giá</label>
+                        <div class="input-group">
+                            <input type="text" id="input_ma_giam_gia" class="form-control text-uppercase font-monospace" placeholder="Nhập mã giảm giá" style="letter-spacing:1px;">
+                            <button type="button" class="btn btn-outline-primary" onclick="apMaGiamGia()"><i class="fas fa-check me-1"></i>Áp dụng</button>
+                        </div>
+                        <div id="discount_msg" class="small mt-1"></div>
+                    </div>
+                    <input type="hidden" name="ma_giam_gia_id" id="hidden_ma_giam_gia_id" value="">
+                    <input type="hidden" name="giam_gia_value" id="hidden_giam_gia_value" value="0">
+
+                    <div class="d-flex justify-content-between mb-2" id="row_giam_gia" style="display:none !important;">
+                        <span class="text-success">Giảm giá:</span>
+                        <span class="text-success fw-bold" id="giam_gia_display">-0đ</span>
+                    </div>
+
+                    <hr>
+                    <%
+                        let phiShip = 0;
+                        if (mienPhiTu > 0 && tongTien >= mienPhiTu) {
+                            phiShip = 0;
+                        } else {
+                            phiShip = phiVanChuyen;
+                        }
+                        const tongCong = tongTien + phiShip;
+                    %>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-bold fs-5">Tổng cộng:</span>
+                        <span class="fw-bold fs-5 text-danger" id="tong_cong_display"><%= Number(tongCong).toLocaleString('vi-VN') %>đ</span>
+                    </div>
+                    <input type="hidden" name="phi_van_chuyen" id="hidden_phi_ship" value="<%= phiShip %>">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg"><i class="fas fa-check me-2"></i>Xác nhận đặt hàng</button>
+                    <a href="/gio-hang" class="btn btn-outline-secondary w-100 mt-2"><i class="fas fa-arrow-left me-2"></i>Quay lại giỏ hàng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    const tongTienSP = <%= tongTien %>;
+    const phiTC = <%= phiVanChuyen %>;
+    const phiHT = <%= phiHoaToc %>;
+    const mienPhiTu = <%= mienPhiTu %>;
+    let currentDiscount = 0;
+
+    function updateTotal() {
+        const isHoaToc = document.getElementById('vc_hoa_toc').checked;
+        let phi = isHoaToc ? phiHT : phiTC;
+        if (!isHoaToc && mienPhiTu > 0 && tongTienSP >= mienPhiTu) phi = 0;
+        const tong = tongTienSP + phi - currentDiscount;
+        document.getElementById('phi_ship_display').innerHTML = phi > 0
+            ? phi.toLocaleString('vi-VN') + 'đ'
+            : '<span class="text-success">Miễn phí</span>';
+        document.getElementById('phi_ship_display').className = phi > 0 ? 'text-danger' : 'text-success';
+        document.getElementById('tong_cong_display').textContent = Math.max(0, tong).toLocaleString('vi-VN') + 'đ';
+        document.getElementById('hidden_phi_ship').value = phi;
+    }
+
+    function updateShipping() { updateTotal(); }
+
+    function apMaGiamGia() {
+        const maCode = document.getElementById('input_ma_giam_gia').value.trim();
+        const msgEl = document.getElementById('discount_msg');
+        if (!maCode) { msgEl.innerHTML = '<span class="text-danger">Vui lòng nhập mã giảm giá</span>'; return; }
+
+        msgEl.innerHTML = '<span class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Đang kiểm tra...</span>';
+
+        fetch('/kiem-tra-ma-giam-gia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ma_code: maCode, tong_tien: tongTienSP })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                currentDiscount = data.giam_gia;
+                document.getElementById('hidden_ma_giam_gia_id').value = data.id;
+                document.getElementById('hidden_giam_gia_value').value = data.giam_gia;
+                document.getElementById('row_giam_gia').style.cssText = '';
+                document.getElementById('giam_gia_display').textContent = '-' + data.giam_gia.toLocaleString('vi-VN') + 'đ';
+                const desc = data.loai_giam === 'phan_tram' ? ('Giảm ' + data.gia_tri + '%') : ('Giảm ' + Number(data.gia_tri).toLocaleString('vi-VN') + 'đ');
+                msgEl.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>' + desc + (data.mo_ta ? ' - ' + data.mo_ta : '') + '</span>';
+                document.getElementById('input_ma_giam_gia').readOnly = true;
+                updateTotal();
+            } else {
+                msgEl.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>' + data.message + '</span>';
+            }
+        })
+        .catch(() => { msgEl.innerHTML = '<span class="text-danger">Lỗi kết nối</span>'; });
+    }
+
+    function toggleBankInfo() {
+        const ckRadio = document.getElementById('pt_ck');
+        const bankInfo = document.getElementById('bankInfo');
+        if (ckRadio && bankInfo) {
+            bankInfo.style.display = ckRadio.checked ? 'block' : 'none';
+        }
+    }
+    toggleBankInfo();
+</script>

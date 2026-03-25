@@ -1,0 +1,79 @@
+<h4 class="section-heading"><i class="fas fa-clipboard-list me-2"></i>Đơn hàng của tôi</h4>
+
+<% if (typeof donHangs === 'undefined' || donHangs.length === 0) { %>
+    <div class="text-center py-5">
+        <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">Chưa có đơn hàng nào</h5>
+        <p class="text-muted">Hãy mua sắm và đặt hàng ngay</p>
+        <a href="/cua-hang" class="btn btn-primary"><i class="fas fa-store me-2"></i>Đi mua sắm</a>
+    </div>
+<% } else { %>
+    <div class="row">
+        <% donHangs.forEach(dh => { %>
+            <div class="col-12 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Hinh anh san pham dau tien -->
+                            <div class="col-auto">
+                                <% if (dh.hinh_anh_sp) { %>
+                                    <img src="<%= dh.hinh_anh_sp %>" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                <% } else { %>
+                                    <img src="/images/no-image.svg" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                <% } %>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Đơn hàng #<%= dh.ma_dh %></h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i><%= new Date(dh.ngay_dat).toLocaleDateString('vi-VN') %>
+                                            &nbsp;|&nbsp;
+                                            <i class="fas fa-box me-1"></i><%= dh.so_san_pham %> sản phẩm
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <% if (dh.trang_thai === 'cho_xac_nhan') { %>
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Chờ xác nhận</span>
+                                        <% } else if (dh.trang_thai === 'da_xac_nhan') { %>
+                                            <span class="badge bg-primary"><i class="fas fa-clipboard-check me-1"></i>Đã xác nhận</span>
+                                        <% } else if (dh.trang_thai === 'dang_giao') { %>
+                                            <span class="badge bg-info"><i class="fas fa-truck me-1"></i>Đang giao</span>
+                                        <% } else if (dh.trang_thai === 'da_giao') { %>
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Đã giao</span>
+                                        <% } else if (dh.trang_thai === 'da_huy') { %>
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Đã hủy</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <span class="fw-bold text-danger fs-5"><%= Number(dh.thanh_toan).toLocaleString('vi-VN') %>đ</span>
+                                    <a href="/don-hang-cua-toi/<%= dh.id %>" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i>Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <!-- Phan trang -->
+    <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="/don-hang-cua-toi?page=<%= pagination.page - 1 %>"><i class="fas fa-chevron-left"></i></a>
+                </li>
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                    <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+                        <a class="page-link" href="/don-hang-cua-toi?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <li class="page-item <%= pagination.page >= pagination.totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="/don-hang-cua-toi?page=<%= pagination.page + 1 %>"><i class="fas fa-chevron-right"></i></a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
+<% } %>

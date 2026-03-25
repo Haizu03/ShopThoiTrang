@@ -1,0 +1,21 @@
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+<nav aria-label="Phân trang">
+    <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPageNum <= 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPageNum - 1 %><%= typeof queryString !== 'undefined' ? queryString : '' %>">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === currentPageNum ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %><%= typeof queryString !== 'undefined' ? queryString : '' %>"><%= i %></a>
+            </li>
+        <% } %>
+        <li class="page-item <%= currentPageNum >= totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= currentPageNum + 1 %><%= typeof queryString !== 'undefined' ? queryString : '' %>">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+</nav>
+<% } %>

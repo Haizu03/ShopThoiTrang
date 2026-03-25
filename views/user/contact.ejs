@@ -1,0 +1,114 @@
+<h4 class="section-heading"><i class="fas fa-headset me-2"></i>Liên hệ với chúng tôi</h4>
+
+<div class="row">
+    <div class="col-lg-7 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="mb-3"><i class="fas fa-paper-plane me-2 text-primary"></i>Gửi tin nhắn</h5>
+                <form action="/lien-he" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Họ tên <span class="text-danger">*</span></label>
+                            <input type="text" name="ho_ten" class="form-control" value="<%= user.ho_ten %>" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" name="email" class="form-control" value="<%= typeof userEmail !== 'undefined' ? userEmail : '' %>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chủ đề <span class="text-danger">*</span></label>
+                        <select name="chu_de" class="form-select" required>
+                            <option value="">-- Chọn chủ đề --</option>
+                            <option value="Hỏi về sản phẩm">Hỏi về sản phẩm</option>
+                            <option value="Đơn hàng & vận chuyển">Đơn hàng & vận chuyển</option>
+                            <option value="Đổi trả & hoàn tiền">Đổi trả & hoàn tiền</option>
+                            <option value="Góp ý & phản hồi">Góp ý & phản hồi</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nội dung <span class="text-danger">*</span></label>
+                        <textarea name="noi_dung" class="form-control" rows="5" required placeholder="Nhập nội dung tin nhắn của bạn..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane me-2"></i>Gửi tin nhắn</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5 mb-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="mb-3"><i class="fas fa-map-marker-alt me-2 text-danger"></i>Thông tin liên hệ</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="me-3" style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-store text-white"></i>
+                        </div>
+                        <div>
+                            <strong>Shop Thời Trang</strong><br>
+                            <small class="text-muted">ĐH Nam Cần Thơ, Cần Thơ</small>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="me-3" style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#00b894,#55efc4);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-phone text-white"></i>
+                        </div>
+                        <div>
+                            <strong>Hotline</strong><br>
+                            <small class="text-muted">0123 456 789</small>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start">
+                        <div class="me-3" style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0984e3,#74b9ff);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                        <div>
+                            <strong>Email</strong><br>
+                            <small class="text-muted">support@shoptt.vn</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <div class="me-3" style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#fdcb6e,#ffeaa7);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-clock text-dark"></i>
+                        </div>
+                        <div>
+                            <strong>Giờ làm việc</strong><br>
+                            <small class="text-muted">8:00 - 22:00 (Thứ 2 - CN)</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Lich su lien he -->
+        <% if (typeof lichSu !== 'undefined' && lichSu.length > 0) { %>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="mb-3"><i class="fas fa-history me-2 text-info"></i>Tin nhắn trước đó</h5>
+                <% lichSu.forEach(lh => { %>
+                <div class="border rounded p-3 mb-2 <%= lh.trang_thai === 'da_phan_hoi' ? 'border-success' : '' %>">
+                    <div class="d-flex justify-content-between mb-1">
+                        <strong class="small"><%= lh.chu_de %></strong>
+                        <% if (lh.trang_thai === 'da_phan_hoi') { %>
+                            <span class="badge bg-success">Đã phản hồi</span>
+                        <% } else if (lh.trang_thai === 'da_doc') { %>
+                            <span class="badge bg-warning text-dark">Đang xử lý</span>
+                        <% } else { %>
+                            <span class="badge bg-secondary">Đã gửi</span>
+                        <% } %>
+                    </div>
+                    <small class="text-muted"><%= new Date(lh.ngay_gui).toLocaleDateString('vi-VN') %></small>
+                    <% if (lh.phan_hoi) { %>
+                        <div class="mt-2 p-2 bg-success bg-opacity-10 rounded small">
+                            <i class="fas fa-reply text-success me-1"></i><%= lh.phan_hoi %>
+                        </div>
+                    <% } %>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>

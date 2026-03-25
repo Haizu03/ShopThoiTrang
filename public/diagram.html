@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ đồ Hệ thống - Shop Thời Trang</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;color:#333}
+        .header{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+        .header h1{font-size:22px}
+        .header .info{font-size:13px;opacity:.85}
+        .tabs{background:#fff;padding:0 40px;border-bottom:2px solid #e0e0e0;display:flex;gap:0}
+        .tab{padding:14px 28px;cursor:pointer;font-size:14px;font-weight:600;color:#666;border-bottom:3px solid transparent;transition:all .2s}
+        .tab:hover{color:#667eea;background:#f8f8ff}
+        .tab.active{color:#667eea;border-bottom-color:#667eea}
+        .section{display:none;padding:30px 40px}
+        .section.active{display:block}
+
+        /* Architecture */
+        .arch-wrap{display:flex;flex-direction:column;gap:30px;max-width:1200px;margin:0 auto}
+        .arch-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+        .arch-box{border-radius:12px;padding:20px;min-width:200px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
+        .arch-title{font-weight:700;font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+        .arch-list{list-style:none;font-size:13px;line-height:2}
+        .arch-list li::before{content:'\203A';margin-right:6px;font-weight:700}
+        .connector{text-align:center;font-size:26px;color:#aaa;letter-spacing:10px}
+
+        /* Module Cards */
+        .modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;max-width:1400px;margin:0 auto}
+        .mod-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s}
+        .mod-card:hover{transform:translateY(-3px);box-shadow:0 6px 25px rgba(0,0,0,.12)}
+        .mod-head{padding:14px 18px;color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px}
+        .mod-body{padding:14px 18px}
+        .mod-body table{width:100%;font-size:12px;border-collapse:collapse}
+        .mod-body th{text-align:left;padding:4px 6px;border-bottom:1px solid #eee;color:#888;font-weight:600;font-size:11px;text-transform:uppercase}
+        .mod-body td{padding:4px 6px;border-bottom:1px solid #f5f5f5}
+        .method{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;color:#fff;min-width:36px;text-align:center}
+        .method.get{background:#61affe}
+        .method.post{background:#49cc90}
+        .mod-desc{font-size:12px;color:#666;margin-bottom:10px;line-height:1.5}
+        .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin:2px}
+        .badge.crud{background:#e8f5e9;color:#2e7d32}
+        .badge.read{background:#e3f2fd;color:#1565c0}
+        .badge.api{background:#fff3e0;color:#e65100}
+
+        /* ERD */
+        .erd-container{display:flex;justify-content:center;padding:20px 0;overflow:auto}
+        .erd-toolbar{background:#fff;padding:10px 40px;border-bottom:1px solid #e0e0e0;display:flex;gap:10px;align-items:center}
+        .erd-toolbar button{padding:7px 16px;border:1px solid #d0d0d0;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;transition:all .2s}
+        .erd-toolbar button:hover{background:#f0f0ff;border-color:#667eea;color:#667eea}
+        .erd-toolbar span{color:#888;font-size:12px;margin-left:auto}
+
+        /* Legend */
+        .legend{background:#fff;border-radius:10px;padding:20px;max-width:1200px;margin:20px auto 0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+        .legend h3{margin-bottom:12px;font-size:15px;color:#555}
+        .legend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px 20px;font-size:13px}
+        .legend-item{display:flex;align-items:center;gap:8px}
+        .legend-color{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+        @media print{
+            .header,.tabs{display:none}
+            .section{display:block!important;page-break-after:always}
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1><i class="fas fa-project-diagram"></i> So do He thong — Shop Quan Ly Thoi Trang</h1>
+        <div class="info">Node.js + Express.js + SQL Server 2022 + EJS + Bootstrap 5 &nbsp;|&nbsp; 15 Routes &bull; 40 Views &bull; 12 Tables &bull; ~70 Endpoints</div>
+    </div>
+    <button onclick="window.print()" style="padding:8px 20px;border:2px solid #fff;border-radius:8px;background:transparent;color:#fff;cursor:pointer;font-weight:600"><i class="fas fa-print"></i> In</button>
+</div>
+
+<div class="tabs">
+    <div class="tab active" data-tab="arch">&#127959; Kien truc</div>
+    <div class="tab" data-tab="admin">&#128295; Admin (12 module)</div>
+    <div class="tab" data-tab="user">&#128722; Nguoi dung (9 trang)</div>
+    <div class="tab" data-tab="erd">&#128452; ERD — CSDL (12 bang)</div>
+</div>
+
+<!-- ==================== TAB 1: ARCHITECTURE ==================== -->
+<div class="section active" id="tab-arch">
+    <div class="arch-wrap">
+        <div class="arch-row">
+            <div class="arch-box" style="background:#e8f5e9;border:2px solid #66bb6a;flex:1;max-width:350px">
+                <div class="arch-title" style="color:#2e7d32"><i class="fas fa-user"></i> Nguoi dung (Client)</div>
+                <ul class="arch-list">
+                    <li>Trinh duyet Web (Chrome, Firefox...)</li>
+                    <li>Responsive: PC, Tablet, Mobile</li>
+                    <li>Bootstrap 5.3.2 + Font Awesome 6.5</li>
+                    <li>Chart.js 4.4.0 (bieu do)</li>
+                </ul>
+            </div>
+            <div class="arch-box" style="background:#fff3e0;border:2px solid #ffa726;flex:1;max-width:350px">
+                <div class="arch-title" style="color:#e65100"><i class="fas fa-user-shield"></i> Admin (Client)</div>
+                <ul class="arch-list">
+                    <li>Dashboard + Sidebar menu (13 muc)</li>
+                    <li>Layout: main.ejs (admin)</li>
+                    <li>12 module quan tri CRUD</li>
+                    <li>Tim kiem 9 bang / Thong ke</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="connector">&#9660; &#9660; &#9660;</div>
+
+        <div class="arch-row">
+            <div class="arch-box" style="background:#e3f2fd;border:2px solid #42a5f5;flex:1;max-width:760px">
+                <div class="arch-title" style="color:#1565c0"><i class="fas fa-server"></i> Server — Node.js + Express.js 4.18.2 (port 3000)</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px;margin-top:8px">
+                    <div style="background:#bbdefb;border-radius:8px;padding:10px">
+                        <b>Middleware</b><br>
+                        &#8226; express-session<br>&#8226; connect-flash<br>&#8226; method-override<br>&#8226; multer (upload)<br>&#8226; express-ejs-layouts
+                    </div>
+                    <div style="background:#bbdefb;border-radius:8px;padding:10px">
+                        <b>Auth &amp; Security</b><br>
+                        &#8226; bcryptjs (salt=10)<br>&#8226; isAuthenticated<br>&#8226; isAdmin<br>&#8226; 3 vai tro<br>&#8226; Parameterized queries
+                    </div>
+                    <div style="background:#bbdefb;border-radius:8px;padding:10px">
+                        <b>Routes (15 files)</b><br>
+                        &#8226; auth.js (7 endpoints)<br>&#8226; user.js (16 endpoints)<br>&#8226; chatbot.js (1 API)<br>&#8226; 12 admin routes<br>&#8226; ~70 endpoints tong
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector">&#9660; &#9660; &#9660;</div>
+
+        <div class="arch-row">
+            <div class="arch-box" style="background:#fce4ec;border:2px solid #ef5350;flex:1;max-width:760px">
+                <div class="arch-title" style="color:#c62828"><i class="fas fa-database"></i> Database — Microsoft SQL Server 2022 Developer</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;margin-top:8px">
+                    <div>
+                        <b>Ket noi:</b> mssql/msnodesqlv8<br>
+                        <b>Driver:</b> ODBC Driver 18<br>
+                        <b>Auth:</b> Windows Authentication<br>
+                        <b>Database:</b> shop_thoi_trang
+                    </div>
+                    <div>
+                        <b>Collation:</b> Vietnamese_CI_AS<br>
+                        <b>12 bang:</b> tai_khoan, san_pham, don_hang...<br>
+                        <b>11 FK:</b> Quan he khoa ngoai<br>
+                        <b>Transaction:</b> Dat hang + Nhap kho
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flow diagram -->
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-top:10px">
+            <h3 style="text-align:center;color:#555;margin-bottom:15px"><i class="fas fa-exchange-alt"></i> Luong xu ly chinh</h3>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:600;text-align:center">
+                <span style="background:#e8f5e9;padding:8px 14px;border-radius:8px">&#128100; User</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#fff9c4;padding:8px 14px;border-radius:8px">&#128274; Dang nhap</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#e3f2fd;padding:8px 14px;border-radius:8px">&#128722; Duyet SP</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#f3e5f5;padding:8px 14px;border-radius:8px">&#128717; Gio hang</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#fce4ec;padding:8px 14px;border-radius:8px">&#128179; Dat hang</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#e0f2f1;padding:8px 14px;border-radius:8px">&#128230; Xac nhan</span>
+            </div>
+            <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:600;text-align:center;margin-top:12px">
+                <span style="background:#fff3e0;padding:8px 14px;border-radius:8px">&#128104;&#8205;&#128188; Admin</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#fff9c4;padding:8px 14px;border-radius:8px">&#128202; Dashboard</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#e3f2fd;padding:8px 14px;border-radius:8px">&#128203; QL Don hang</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#f3e5f5;padding:8px 14px;border-radius:8px">&#128666; Giao hang</span>
+                <span style="color:#aaa">&#8594;</span>
+                <span style="background:#e0f2f1;padding:8px 14px;border-radius:8px">&#128200; Thong ke</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TAB 2: ADMIN MODULES ==================== -->
+<div class="section" id="tab-admin">
+    <div class="modules-grid">
+
+        <!-- Dashboard -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-tachometer-alt"></i> Dashboard — Tong quan</div>
+            <div class="mod-body">
+                <div class="mod-desc">Trang tong quan hien thi KPI, bieu do doanh thu 7 ngay, top 5 don gan nhat, top 5 SP ban chay.</div>
+                <span class="badge read">GET /dashboard</span>
+                <table><tr><th>Thanh phan</th><th>Chi tiet</th></tr>
+                <tr><td>6 the KPI</td><td>SP, Don hang, KH, Doanh thu, Cho xu ly, Het hang</td></tr>
+                <tr><td>Bieu do</td><td>Chart.js — Doanh thu 7 ngay</td></tr>
+                <tr><td>Bang</td><td>5 don gan nhat + 5 SP ban chay</td></tr></table>
+            </div>
+        </div>
+
+        <!-- San pham -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-box"></i> San pham — /san-pham</div>
+            <div class="mod-body">
+                <div class="mod-desc">CRUD san pham: 10 danh muc, 3 gioi tinh. Upload hinh anh qua Multer. Loc, tim kiem, phan trang.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/san-pham</td><td>Danh sach SP</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/san-pham/them</td><td>Form them SP</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/san-pham/them</td><td>Tao SP + upload anh</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/san-pham/sua/:id</td><td>Form sua SP</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/san-pham/sua/:id</td><td>Cap nhat SP</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/san-pham/xoa/:id</td><td>Xoa SP</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/san-pham/:id</td><td>Chi tiet SP</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Danh muc -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-tags"></i> Danh muc — /danh-muc</div>
+            <div class="mod-body">
+                <div class="mod-desc">Quan ly 10 danh muc: Ao nam, Quan nam, Vay/Dam, Giay dep, Phu kien, Ao nu, Quan nu, Ao khoac, Do the thao, Tui xach.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/danh-muc</td><td>Danh sach danh muc</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/danh-muc/them</td><td>Them danh muc</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/danh-muc/sua/:id</td><td>Sua danh muc</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/danh-muc/xoa/:id</td><td>Xoa danh muc</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Don hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#fa709a,#fee140)"><i class="fas fa-shopping-cart"></i> Don hang — /don-hang</div>
+            <div class="mod-body">
+                <div class="mod-desc">Quan ly don hang: xem, tao, cap nhat 5 trang thai, in hoa don. Phan trang, loc theo trang thai.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang</td><td>Danh sach don</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang/tao</td><td>Form tao don</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/don-hang/tao</td><td>Tao don hang</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/don-hang/cap-nhat-trang-thai/:id</td><td>Cap nhat trang thai</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang/:id</td><td>Chi tiet + In hoa don</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang/xoa/:id</td><td>Xoa don hang</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Khach hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-users"></i> Khach hang — /khach-hang</div>
+            <div class="mod-body">
+                <div class="mod-desc">Quan ly khach hang: them/sua/xoa, phan trang, tim kiem theo ten hoac SDT.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/khach-hang</td><td>Danh sach KH</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/khach-hang/them</td><td>Form them KH</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/khach-hang/them</td><td>Tao KH</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/khach-hang/sua/:id</td><td>Form sua KH</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/khach-hang/sua/:id</td><td>Cap nhat KH</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/khach-hang/xoa/:id</td><td>Xoa KH</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Nhan vien -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)"><i class="fas fa-user-tie" style="color:#333"></i><span style="color:#333"> Nhan vien — /nhan-vien</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">Quan ly nhan vien: tao kem tai khoan he thong | chuc vu + luong | lien ket tai_khoan_id.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhan-vien</td><td>Danh sach NV</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhan-vien/them</td><td>Form them NV</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/nhan-vien/them</td><td>Tao NV + tai khoan</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhan-vien/sua/:id</td><td>Form sua NV</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/nhan-vien/sua/:id</td><td>Cap nhat NV</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhan-vien/xoa/:id</td><td>Xoa NV</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Nhap hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-truck" style="color:#333"></i><span style="color:#333"> Nhap hang — /nhap-hang</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">Tao phieu nhap: them nhieu SP cung luc, tu dong cong ton kho. Lien ket nhan vien thuc hien.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhap-hang</td><td>Danh sach phieu nhap</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhap-hang/tao</td><td>Form tao phieu</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/nhap-hang/tao</td><td>Tao phieu + cong kho</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhap-hang/:id</td><td>Chi tiet phieu nhap</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/nhap-hang/xoa/:id</td><td>Xoa phieu nhap</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Thong ke -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-chart-bar"></i> Thong ke — /thong-ke</div>
+            <div class="mod-body">
+                <div class="mod-desc">6 loai bao cao: doanh thu thang, top SP ban chay, danh muc, ton kho, khach VIP. In bao cao.</div>
+                <span class="badge read">GET /thong-ke</span>
+                <table><tr><th>Bao cao</th><th>Chi tiet</th></tr>
+                <tr><td>Doanh thu 12 thang</td><td>Bieu do cot (Chart.js)</td></tr>
+                <tr><td>Doanh thu danh muc</td><td>Bieu do tron (Doughnut)</td></tr>
+                <tr><td>Top 10 SP ban chay</td><td>Bang xep hang trong thang</td></tr>
+                <tr><td>Top 10 khach hang</td><td>Theo tong chi tieu</td></tr>
+                <tr><td>Ton kho</td><td>20 SP thap nhat (do/vang)</td></tr>
+                <tr><td>In bao cao</td><td>window.print + @media print</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Tim kiem -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)"><i class="fas fa-search" style="color:#333"></i><span style="color:#333"> Tim kiem — /tim-kiem</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">Tim kiem toan he thong qua 9 bang. Loc theo pham vi: tat ca hoac tung loai cu the.</div>
+                <span class="badge read">GET /tim-kiem</span>
+                <table><tr><th>Bang tim kiem</th><th>Hien thi</th></tr>
+                <tr><td>san_pham</td><td>Ma, ten, gia, ton kho</td></tr>
+                <tr><td>don_hang</td><td>Ma DH, KH, tong tien, trang thai</td></tr>
+                <tr><td>khach_hang</td><td>Ten, SDT, email</td></tr>
+                <tr><td>tai_khoan</td><td>Username, ho ten, vai tro</td></tr>
+                <tr><td>nhan_vien</td><td>Ma NV, ten, chuc vu</td></tr>
+                <tr><td>danh_muc</td><td>Ten, mo ta, trang thai</td></tr>
+                <tr><td>ma_giam_gia</td><td>Ma code, loai, gia tri</td></tr>
+                <tr><td>lien_he</td><td>Ten, chu de, trang thai</td></tr>
+                <tr><td>phieu_nhap</td><td>Ma phieu, NCC, tong tien</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Ma giam gia -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#f5576c,#ff6a88)"><i class="fas fa-ticket-alt"></i> Ma giam gia — /ma-giam-gia</div>
+            <div class="mod-body">
+                <div class="mod-desc">2 loai: phan tram + co dinh. Cai dat: gia tri, don toi thieu, so luong, han su dung.</div>
+                <span class="badge crud">CRUD</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/ma-giam-gia</td><td>Danh sach ma</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/ma-giam-gia/tao</td><td>Form tao ma</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/ma-giam-gia/tao</td><td>Tao ma giam gia</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/ma-giam-gia/sua/:id</td><td>Form sua ma</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/ma-giam-gia/sua/:id</td><td>Cap nhat ma</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/ma-giam-gia/xoa/:id</td><td>Xoa ma</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Lien he -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-envelope"></i> Lien he — /lien-he</div>
+            <div class="mod-body">
+                <div class="mod-desc">Xem tin nhan KH, phan hoi. Trang thai: Cho xu ly -> Da phan hoi. Loc theo trang thai.</div>
+                <span class="badge crud">CRD + Reply</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/lien-he</td><td>Danh sach lien he</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/lien-he/:id</td><td>Chi tiet tin nhan</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/lien-he/phan-hoi/:id</td><td>Gui phan hoi</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/lien-he/xoa/:id</td><td>Xoa lien he</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Cai dat -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#868f96,#596164)"><i class="fas fa-cog"></i> Cai dat — /cai-dat</div>
+            <div class="mod-body">
+                <div class="mod-desc">Key-value settings: cai dat don hang + thanh toan (upload QR chuyen khoan).</div>
+                <span class="badge read">GET + POST</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/cai-dat</td><td>Trang cai dat</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/cai-dat/don-hang</td><td>Luu cai dat don hang</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/cai-dat/thanh-toan</td><td>Luu cai dat thanh toan</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Auth -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)"><i class="fas fa-lock" style="color:#333"></i><span style="color:#333"> Xac thuc — auth.js (Public)</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">Dang nhap / Dang ky / Dang xuat / Doi mat khau. bcrypt salt=10. 3 vai tro: admin, nhanvien, nguoidung.</div>
+                <span class="badge api">7 endpoints</span>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/dang-nhap</td><td>Trang dang nhap</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/dang-nhap</td><td>Xu ly dang nhap</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/dang-ky</td><td>Trang dang ky</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/dang-ky</td><td>Xu ly dang ky</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/dang-xuat</td><td>Dang xuat</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/doi-mat-khau</td><td>Trang doi MK</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/doi-mat-khau</td><td>Xu ly doi MK</td></tr></table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==================== TAB 3: USER PAGES ==================== -->
+<div class="section" id="tab-user">
+    <div class="modules-grid">
+
+        <!-- Trang chu -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-home"></i> Trang chu — /trang-chu</div>
+            <div class="mod-body">
+                <div class="mod-desc">Slider banner + 10 danh muc + 8 san pham moi nhat. Layout: user.ejs voi navbar.</div>
+                <span class="badge read">GET /trang-chu</span>
+            </div>
+        </div>
+
+        <!-- Cua hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-store"></i> Cua hang — /cua-hang</div>
+            <div class="mod-body">
+                <div class="mod-desc">Duyet toan bo SP. Loc: danh muc, gioi tinh (Nam/Nu/Unisex), tim kiem theo ten. Phan trang 12 SP/trang.</div>
+                <span class="badge read">GET /cua-hang</span>
+                <table><tr><th>Tinh nang</th><th>Chi tiet</th></tr>
+                <tr><td>Loc danh muc</td><td>10 danh muc dropdown</td></tr>
+                <tr><td>Loc gioi tinh</td><td>Nam / Nu / Unisex</td></tr>
+                <tr><td>Tim kiem</td><td>Theo ten san pham</td></tr>
+                <tr><td>Phan trang</td><td>12 SP/trang</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Chi tiet SP -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-eye"></i> Chi tiet SP — /san-pham-chi-tiet/:id</div>
+            <div class="mod-body">
+                <div class="mod-desc">Hinh anh, ten, gia, mo ta, chat lieu, size, mau. Nut "Them vao gio". SP lien quan cung danh muc.</div>
+                <span class="badge read">GET /san-pham-chi-tiet/:id</span>
+            </div>
+        </div>
+
+        <!-- Gio hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#fa709a,#fee140)"><i class="fas fa-shopping-bag"></i> Gio hang — /gio-hang</div>
+            <div class="mod-body">
+                <div class="mod-desc">Session-based. Them, cap nhat so luong, xoa SP. Cong don tu dong. Kiem tra ton kho.</div>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/gio-hang</td><td>Xem gio hang</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/gio-hang/them</td><td>Them SP</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/gio-hang/cap-nhat</td><td>Cap nhat SL</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/gio-hang/xoa/:id</td><td>Xoa SP khoi gio</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Dat hang -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-credit-card" style="color:#333"></i><span style="color:#333"> Dat hang — /dat-hang</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">SQL Transaction: Tao KH &#8594; Tao don &#8594; Chi tiet don &#8594; Tru kho &#8594; Xoa gio. Ma giam gia + 3 phuong thuc TT.</div>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/dat-hang</td><td>Trang thanh toan</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/dat-hang</td><td>Xu ly dat hang</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/kiem-tra-ma-giam-gia</td><td>Validate ma giam gia</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Don hang cua toi -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fas fa-clipboard-list"></i> Don hang cua toi</div>
+            <div class="mod-body">
+                <div class="mod-desc">Xem tat ca don (10/trang), chi tiet don, huy don (chi "Cho xac nhan" — hoan ton kho).</div>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang-cua-toi</td><td>Danh sach don</td></tr>
+                <tr><td><span class="method get">GET</span></td><td>/don-hang-cua-toi/:id</td><td>Chi tiet don</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/don-hang-cua-toi/huy/:id</td><td>Huy don + hoan kho</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Ho so -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-user-circle"></i> Ho so ca nhan — /thong-tin</div>
+            <div class="mod-body">
+                <div class="mod-desc">Cap nhat thong tin, upload avatar (5MB), nhap so do (cao, nang, 3 vong) cho AI tu van size. Thong ke ca nhan.</div>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/thong-tin</td><td>Trang ho so</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/thong-tin</td><td>Cap nhat + upload</td></tr></table>
+            </div>
+        </div>
+
+        <!-- Lien he User -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)"><i class="fas fa-paper-plane" style="color:#333"></i><span style="color:#333"> Lien he — /lien-he-user</span></div>
+            <div class="mod-body">
+                <div class="mod-desc">Form gui lien he: ho ten, chu de, noi dung. Tu dong gan tai_khoan_id neu da dang nhap.</div>
+                <table><tr><th>Method</th><th>Path</th><th>Chuc nang</th></tr>
+                <tr><td><span class="method get">GET</span></td><td>/lien-he-user</td><td>Form lien he</td></tr>
+                <tr><td><span class="method post">POST</span></td><td>/lien-he</td><td>Gui tin nhan</td></tr></table>
+            </div>
+        </div>
+
+        <!-- AI Chatbot -->
+        <div class="mod-card">
+            <div class="mod-head" style="background:linear-gradient(135deg,#f5576c,#ff6a88)"><i class="fas fa-robot"></i> AI Chatbot — /api/chatbox</div>
+            <div class="mod-body">
+                <div class="mod-desc">Widget noi goc phai. Rule-based AI: 8 intent, scoring size, BMI, 8 xu huong 2026, tim SP trong DB.</div>
+                <span class="badge api">POST /api/chatbox</span>
+                <table><tr><th>Intent</th><th>Mo ta</th></tr>
+                <tr><td>greeting / goodbye</td><td>Chao hoi, tam biet</td></tr>
+                <tr><td>size_recommend</td><td>Goi y size tu so do (XS-XXL)</td></tr>
+                <tr><td>product_recommend</td><td>Goi y SP theo dang nguoi (BMI)</td></tr>
+                <tr><td>trend_general</td><td>8 xu huong thoi trang 2026</td></tr>
+                <tr><td>trend_specific</td><td>Chi tiet 1 xu huong cu the</td></tr>
+                <tr><td>search_product</td><td>Tim SP trong DB theo keyword</td></tr>
+                <tr><td>shop_info</td><td>Thong tin shop, gio mo cua</td></tr></table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==================== TAB 4: ERD ==================== -->
+<div class="section" id="tab-erd">
+    <div class="erd-toolbar">
+        <button onclick="zoomIn()">&#128269;+ Phong to</button>
+        <button onclick="zoomOut()">&#128269;- Thu nho</button>
+        <button onclick="resetZoom()">&#8634; Reset</button>
+        <button onclick="window.print()">&#128424; In</button>
+        <span>12 bang &bull; 11 quan he FK &bull; Cuon de xem</span>
+    </div>
+    <div class="erd-container">
+        <canvas id="erdCanvas" width="1600" height="1000"></canvas>
+    </div>
+
+    <div class="legend">
+        <h3><i class="fas fa-info-circle"></i> Chu thich cac bang</h3>
+        <div class="legend-grid">
+            <div class="legend-item"><div class="legend-color" style="background:#4a90d9"></div><b>tai_khoan</b> (18 cot) — Tai khoan nguoi dung</div>
+            <div class="legend-item"><div class="legend-color" style="background:#e74c3c"></div><b>nhan_vien</b> (13 cot) — Nhan vien</div>
+            <div class="legend-item"><div class="legend-color" style="background:#27ae60"></div><b>khach_hang</b> (7 cot) — Khach hang</div>
+            <div class="legend-item"><div class="legend-color" style="background:#f39c12"></div><b>danh_muc</b> (5 cot) — Danh muc san pham</div>
+            <div class="legend-item"><div class="legend-color" style="background:#8e44ad"></div><b>san_pham</b> (15 cot) — San pham</div>
+            <div class="legend-item"><div class="legend-color" style="background:#e67e22"></div><b>don_hang</b> (13 cot) — Don hang</div>
+            <div class="legend-item"><div class="legend-color" style="background:#d35400"></div><b>chi_tiet_don_hang</b> (6 cot) — Chi tiet don</div>
+            <div class="legend-item"><div class="legend-color" style="background:#16a085"></div><b>phieu_nhap</b> (8 cot) — Phieu nhap hang</div>
+            <div class="legend-item"><div class="legend-color" style="background:#1abc9c"></div><b>chi_tiet_phieu_nhap</b> (6 cot) — Chi tiet phieu nhap</div>
+            <div class="legend-item"><div class="legend-color" style="background:#c0392b"></div><b>ma_giam_gia</b> (12 cot) — Ma giam gia</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2980b9"></div><b>lien_he</b> (10 cot) — Lien he</div>
+            <div class="legend-item"><div class="legend-color" style="background:#7f8c8d"></div><b>cai_dat</b> (4 cot) — Cai dat he thong</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== TAB SWITCHING =====
+document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        if (tab.dataset.tab === 'erd') drawERD();
+    });
+});
+
+// ===== ERD DRAWING =====
+var scale = 1;
+var canvas = document.getElementById('erdCanvas');
+var ctx = canvas.getContext('2d');
+
+var tables = [
+    { name:'tai_khoan', color:'#4a90d9', cols:['id PK','ten_dang_nhap UK','mat_khau','ho_ten','vai_tro','trang_thai','email','so_dien_thoai','dia_chi','hinh_dai_dien','chieu_cao','can_nang','vong_1','vong_2','vong_3','ngay_sinh','gioi_tinh','ngay_tao'] },
+    { name:'nhan_vien', color:'#e74c3c', cols:['id PK','ma_nv UK','ho_ten','so_dien_thoai','email','dia_chi','gioi_tinh','chuc_vu','luong','ngay_vao_lam','trang_thai','tai_khoan_id FK','ngay_tao'] },
+    { name:'khach_hang', color:'#27ae60', cols:['id PK','ho_ten','so_dien_thoai','email','dia_chi','gioi_tinh','ngay_tao'] },
+    { name:'danh_muc', color:'#f39c12', cols:['id PK','ten_danh_muc','mo_ta','trang_thai','ngay_tao'] },
+    { name:'san_pham', color:'#8e44ad', cols:['id PK','ma_sp UK','ten_sp','danh_muc_id FK','gia_nhap','gia_ban','so_luong','kich_thuoc','mau_sac','chat_lieu','hinh_anh','mo_ta','gioi_tinh','trang_thai','ngay_tao'] },
+    { name:'don_hang', color:'#e67e22', cols:['id PK','ma_dh UK','khach_hang_id FK','tai_khoan_id FK','nhan_vien_id FK','ngay_dat','tong_tien','giam_gia','thanh_toan','phuong_thuc_tt','trang_thai','ghi_chu','ngay_tao'] },
+    { name:'chi_tiet_don_hang', color:'#d35400', cols:['id PK','don_hang_id FK','san_pham_id FK','so_luong','don_gia','thanh_tien'] },
+    { name:'phieu_nhap', color:'#16a085', cols:['id PK','ma_phieu UK','nhan_vien_id FK','nha_cung_cap','ngay_nhap','tong_tien','ghi_chu','ngay_tao'] },
+    { name:'chi_tiet_phieu_nhap', color:'#1abc9c', cols:['id PK','phieu_nhap_id FK','san_pham_id FK','so_luong','don_gia','thanh_tien'] },
+    { name:'ma_giam_gia', color:'#c0392b', cols:['id PK','ma_code UK','mo_ta','loai_giam','gia_tri','don_toi_thieu','so_luong','da_su_dung','ngay_bat_dau','ngay_ket_thuc','trang_thai','ngay_tao'] },
+    { name:'lien_he', color:'#2980b9', cols:['id PK','tai_khoan_id FK','ho_ten','email','chu_de','noi_dung','phan_hoi','trang_thai','ngay_gui','ngay_phan_hoi'] },
+    { name:'cai_dat', color:'#7f8c8d', cols:['id PK','khoa UK','gia_tri','ngay_cap_nhat'] }
+];
+
+var positions = [
+    [0,0],[0,1],[0,2],[0,3],[0,4],
+    [1,0],[1,1],[1,2],[1,3],
+    [2,0],[2,1],[2,2]
+];
+
+var COL_W = 300, ROW_H_BASE = 30, HEADER_H = 32, PAD = 20, GAP_X = 40, GAP_Y = 40;
+
+function getTableRect(idx) {
+    var t = tables[idx], p = positions[idx];
+    var x = PAD + p[1] * (COL_W + GAP_X);
+    var y = PAD + p[0] * (400 + GAP_Y);
+    var h = HEADER_H + t.cols.length * ROW_H_BASE + 6;
+    return { x: x, y: y, w: COL_W, h: h };
+}
+
+var relations = [
+    [0,1,'tai_khoan_id','1:1'], [0,5,'tai_khoan_id','1:N'], [0,10,'tai_khoan_id','1:N'],
+    [2,5,'khach_hang_id','1:N'], [1,5,'nhan_vien_id','1:N'], [1,7,'nhan_vien_id','1:N'],
+    [3,4,'danh_muc_id','1:N'], [5,6,'don_hang_id','1:N'], [4,6,'san_pham_id','1:N'],
+    [7,8,'phieu_nhap_id','1:N'], [4,8,'san_pham_id','1:N']
+];
+
+function roundRect(x, y, w, h, r) {
+    if (typeof r === 'number') r = [r, r, r, r];
+    ctx.beginPath();
+    ctx.moveTo(x + r[0], y);
+    ctx.lineTo(x + w - r[1], y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r[1]);
+    ctx.lineTo(x + w, y + h - r[2]);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r[2], y + h);
+    ctx.lineTo(x + r[3], y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r[3]);
+    ctx.lineTo(x, y + r[0]);
+    ctx.quadraticCurveTo(x, y, x + r[0], y);
+    ctx.closePath();
+}
+
+function drawERD() {
+    var totalW = 5 * (COL_W + GAP_X) + PAD * 2;
+    var totalH = 3 * (400 + GAP_Y) + PAD * 2;
+    canvas.width = totalW * scale;
+    canvas.height = totalH * scale;
+    canvas.style.width = totalW + 'px';
+    canvas.style.height = totalH + 'px';
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.clearRect(0, 0, totalW, totalH);
+
+    // Draw relations
+    for (var ri = 0; ri < relations.length; ri++) {
+        var rel = relations[ri];
+        var from = rel[0], to = rel[1], fk = rel[2], card = rel[3];
+        var r1 = getTableRect(from), r2 = getTableRect(to);
+        var x1 = r1.x + r1.w / 2, y1 = r1.y + r1.h;
+        var x2 = r2.x + r2.w / 2, y2 = r2.y;
+        var midY = (y1 + y2) / 2;
+        ctx.beginPath();
+        ctx.strokeStyle = '#999';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([]);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x1, midY);
+        ctx.lineTo(x2, midY);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.font = '10px Segoe UI';
+        ctx.fillStyle = '#888';
+        ctx.textAlign = 'center';
+        ctx.fillText(card + ' ' + fk, (x1 + x2) / 2, midY - 4);
+    }
+
+    // Draw tables
+    for (var i = 0; i < tables.length; i++) {
+        var t = tables[i];
+        var r = getTableRect(i);
+
+        // Shadow
+        ctx.shadowColor = 'rgba(0,0,0,0.12)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 3;
+        ctx.fillStyle = '#fff';
+        roundRect(r.x, r.y, r.w, r.h, 6);
+        ctx.fill();
+        ctx.shadowColor = 'transparent';
+
+        // Header
+        ctx.fillStyle = t.color;
+        roundRect(r.x, r.y, r.w, HEADER_H, [6, 6, 0, 0]);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 13px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.fillText(t.name, r.x + r.w / 2, r.y + 21);
+
+        // Columns
+        for (var ci = 0; ci < t.cols.length; ci++) {
+            var cy = r.y + HEADER_H + ci * ROW_H_BASE + 20;
+            var parts = t.cols[ci].split(' ');
+            var colName = parts[0];
+            var tag = parts[1] || '';
+
+            if (ci % 2 === 0) {
+                ctx.fillStyle = '#f9f9f9';
+                ctx.fillRect(r.x + 1, r.y + HEADER_H + ci * ROW_H_BASE + 3, r.w - 2, ROW_H_BASE);
+            }
+
+            ctx.fillStyle = '#333';
+            ctx.font = '11px Consolas';
+            ctx.textAlign = 'left';
+            ctx.fillText(colName, r.x + 10, cy);
+
+            if (tag) {
+                var bx = r.x + r.w - 35;
+                var colors = { PK: '#e74c3c', FK: '#3498db', UK: '#f39c12' };
+                ctx.fillStyle = colors[tag] || '#999';
+                roundRect(bx, cy - 10, 28, 14, 3);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 9px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(tag, bx + 14, cy);
+            }
+        }
+
+        // Border
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 1;
+        roundRect(r.x, r.y, r.w, r.h, 6);
+        ctx.stroke();
+    }
+}
+
+function zoomIn() { scale = Math.min(scale + 0.15, 2.5); drawERD(); }
+function zoomOut() { scale = Math.max(scale - 0.15, 0.4); drawERD(); }
+function resetZoom() { scale = 1; drawERD(); }
+
+drawERD();
+</script>
+
+</body>
+</html>

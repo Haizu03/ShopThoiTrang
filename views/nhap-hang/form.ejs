@@ -1,0 +1,134 @@
+<div class="row justify-content-center">
+    <div class="col-lg-12">
+        <div class="form-container">
+            <h5 class="mb-4"><i class="fas fa-plus me-2"></i>Tạo phiếu nhập hàng</h5>
+
+            <form action="/nhap-hang/tao" method="POST">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Mã phiếu nhập</label>
+                        <input type="text" name="ma_phieu" class="form-control" value="<%= maPhieu %>" required readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nhà cung cấp</label>
+                        <input type="text" name="nha_cung_cap" class="form-control" placeholder="Tên nhà cung cấp">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nhân viên nhập</label>
+                        <select name="nhan_vien_id" class="form-select">
+                            <option value="">-- Chọn --</option>
+                            <% nhanViens.forEach(nv => { %>
+                                <option value="<%= nv.id %>"><%= nv.ho_ten %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="mb-3"><i class="fas fa-list me-1"></i>Chi tiết nhập hàng</h6>
+                <div class="alert alert-info py-2 small">
+                    <i class="fas fa-info-circle me-1"></i>Khi nhập hàng sẽ tự động cập nhật <strong>số lượng tồn kho</strong> và <strong>giá nhập</strong>. Nếu nhập giá bán mới (> 0) sẽ cập nhật luôn giá bán.
+                </div>
+                <div id="importList">
+                    <div class="row mb-2 import-row align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Sản phẩm</label>
+                            <select name="san_pham_ids" class="form-select sp-import-select" required onchange="fillImportInfo(this)">
+                                <option value="">-- Chọn --</option>
+                                <% sanPhams.forEach(sp => { %>
+                                    <option value="<%= sp.id %>" data-gia-nhap="<%= sp.gia_nhap %>" data-gia-ban="<%= sp.gia_ban %>" data-ton="<%= sp.so_luong %>">
+                                        <%= sp.ma_sp %> - <%= sp.ten_sp %> (Tồn: <%= sp.so_luong %>)
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Số lượng nhập</label>
+                            <input type="number" name="so_luongs" class="form-control" value="1" min="1" required onchange="calcImportTotal()">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Giá nhập</label>
+                            <input type="number" name="don_gias" class="form-control import-gia-nhap" value="0" min="0" required onchange="calcImportTotal()">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Giá bán mới <small class="text-muted">(0 = giữ)</small></label>
+                            <input type="number" name="gia_bans" class="form-control import-gia-ban" value="0" min="0">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Thành tiền</label>
+                            <input type="text" class="form-control thanh-tien-display" readonly>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-danger" onclick="removeImportRow(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addImportRow()">
+                        <i class="fas fa-plus me-1"></i>Thêm dòng
+                    </button>
+                    <div class="h5 mb-0">Tổng: <span class="price" id="importTotal">0đ</span></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Ghi chú</label>
+                    <textarea name="ghi_chu" class="form-control" rows="2" placeholder="Ghi chú phiếu nhập..."></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Tạo phiếu nhập</button>
+                    <a href="/nhap-hang" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const importOptions = document.querySelector('.import-row select').innerHTML;
+
+function addImportRow() {
+    const row = document.createElement('div');
+    row.className = 'row mb-2 import-row align-items-end';
+    row.innerHTML = `
+        <div class="col-md-3"><select name="san_pham_ids" class="form-select sp-import-select" required onchange="fillImportInfo(this)">${importOptions}</select></div>
+        <div class="col-md-2"><input type="number" name="so_luongs" class="form-control" value="1" min="1" required onchange="calcImportTotal()"></div>
+        <div class="col-md-2"><input type="number" name="don_gias" class="form-control import-gia-nhap" value="0" min="0" required onchange="calcImportTotal()"></div>
+        <div class="col-md-2"><input type="number" name="gia_bans" class="form-control import-gia-ban" value="0" min="0"></div>
+        <div class="col-md-2"><input type="text" class="form-control thanh-tien-display" readonly></div>
+        <div class="col-md-1"><button type="button" class="btn btn-danger" onclick="removeImportRow(this)"><i class="fas fa-times"></i></button></div>`;
+    document.getElementById('importList').appendChild(row);
+}
+
+function removeImportRow(btn) {
+    const rows = document.querySelectorAll('.import-row');
+    if (rows.length > 1) {
+        btn.closest('.import-row').remove();
+        calcImportTotal();
+    }
+}
+
+function fillImportInfo(select) {
+    const row = select.closest('.import-row');
+    const option = select.options[select.selectedIndex];
+    const giaNhap = option.dataset.giaNhap || 0;
+    const giaBan = option.dataset.giaBan || 0;
+    row.querySelector('.import-gia-nhap').value = Math.round(giaNhap);
+    row.querySelector('.import-gia-ban').value = 0;
+    calcImportTotal();
+}
+
+function calcImportTotal() {
+    let total = 0;
+    document.querySelectorAll('.import-row').forEach(row => {
+        const sl = parseInt(row.querySelector('[name="so_luongs"]').value) || 0;
+        const gia = parseFloat(row.querySelector('.import-gia-nhap').value) || 0;
+        const tt = sl * gia;
+        row.querySelector('.thanh-tien-display').value = tt.toLocaleString('vi-VN') + 'đ';
+        total += tt;
+    });
+    document.getElementById('importTotal').textContent = total.toLocaleString('vi-VN') + 'đ';
+}
+</script>

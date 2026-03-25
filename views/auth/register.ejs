@@ -1,0 +1,79 @@
+<div class="login-container" style="background:#f5f6fa;">
+    <div class="row g-0 shadow-lg" style="max-width:900px;width:95%;border-radius:20px;overflow:hidden;min-height:560px;">
+        <!-- Left - Fashion Image -->
+        <div class="col-lg-5 d-none d-lg-block position-relative">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80" 
+                 alt="Fashion" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(26,26,46,0.85) 0%,rgba(26,26,46,0.4) 100%);"></div>
+            <div class="position-absolute bottom-0 start-0 p-4 text-white">
+                <h4 class="fw-bold mb-2">Tham gia ngay!</h4>
+                <p class="opacity-75 mb-0" style="font-size:0.9rem;">Tạo tài khoản để nhận ưu đãi đặc biệt và theo dõi đơn hàng dễ dàng.</p>
+                <div class="d-flex gap-2 mt-3">
+                    <span class="badge bg-warning text-dark px-2 py-1" style="font-size:0.75rem;">Giảm 10%</span>
+                    <span class="badge bg-light text-dark px-2 py-1" style="font-size:0.75rem;">Free Ship</span>
+                    <span class="badge bg-info text-white px-2 py-1" style="font-size:0.75rem;">Ưu đãi VIP</span>
+                </div>
+            </div>
+        </div>
+        <!-- Right - Form -->
+        <div class="col-lg-7 bg-white d-flex align-items-center">
+            <div class="w-100 p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
+                         style="width:60px;height:60px;background:linear-gradient(135deg,#e17055,#fd79a8);">
+                        <i class="fas fa-user-plus fa-lg text-white"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Tạo tài khoản</h3>
+                    <p class="text-muted mb-0">Điền thông tin để đăng ký</p>
+                </div>
+                
+                <% if (typeof messages !== 'undefined' && messages.error) { %>
+                    <div class="alert alert-danger py-2"><i class="fas fa-exclamation-circle me-1"></i><%= messages.error %></div>
+                <% } %>
+                <% if (typeof messages !== 'undefined' && messages.success) { %>
+                    <div class="alert alert-success py-2"><i class="fas fa-check-circle me-1"></i><%= messages.success %></div>
+                <% } %>
+
+                <form action="/dang-ky" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:0.9rem;">Họ tên</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-id-card text-muted"></i></span>
+                            <input type="text" name="ho_ten" class="form-control border-start-0 bg-light" placeholder="Nhập họ tên" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="font-size:0.9rem;">Tên đăng nhập</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+                            <input type="text" name="ten_dang_nhap" class="form-control border-start-0 bg-light" placeholder="Nhập tên đăng nhập" required>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:0.9rem;">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                                <input type="password" name="mat_khau" class="form-control border-start-0 bg-light" placeholder="Ít nhất 6 ký tự" required minlength="6">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:0.9rem;">Xác nhận</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                                <input type="password" name="xac_nhan" class="form-control border-start-0 bg-light" placeholder="Nhập lại" required minlength="6">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn w-100 text-white py-2 fw-semibold" style="background:linear-gradient(135deg,#e17055,#fd79a8);border:none;border-radius:10px;">
+                        <i class="fas fa-user-plus me-2"></i>Đăng ký
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <span class="text-muted" style="font-size:0.9rem;">Đã có tài khoản?</span>
+                    <a href="/dang-nhap" class="fw-semibold text-decoration-none" style="color:#e17055;"> Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

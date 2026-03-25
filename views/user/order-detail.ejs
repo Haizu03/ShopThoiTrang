@@ -1,0 +1,152 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="section-heading mb-0"><i class="fas fa-file-invoice me-2"></i>Chi tiết đơn hàng #<%= donHang.ma_dh %></h4>
+    <a href="/don-hang-cua-toi" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+</div>
+
+<!-- Progress Stepper cho user -->
+<% if (donHang.trang_thai !== 'da_huy') { %>
+<%
+    const steps = [
+        { key: 'cho_xac_nhan', label: 'Chờ xác nhận', icon: 'fas fa-clock', desc: 'Đơn hàng đang chờ shop xác nhận' },
+        { key: 'da_xac_nhan', label: 'Đã xác nhận', icon: 'fas fa-clipboard-check', desc: 'Shop đã xác nhận đơn hàng' },
+        { key: 'dang_giao', label: 'Đang giao', icon: 'fas fa-truck', desc: 'Đơn hàng đang được giao đến bạn' },
+        { key: 'da_giao', label: 'Đã giao', icon: 'fas fa-check-circle', desc: 'Giao hàng thành công' }
+    ];
+    const currentIdx = steps.findIndex(s => s.key === donHang.trang_thai);
+%>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-center position-relative">
+            <div style="position:absolute;top:20px;left:40px;right:40px;height:3px;background:#dee2e6;z-index:0;"></div>
+            <div style="position:absolute;top:20px;left:40px;height:3px;background:#6f42c1;z-index:1;width:<%= currentIdx >= 0 ? Math.min(currentIdx / (steps.length - 1) * 100, 100) : 0 %>%;transition:width 0.5s;"></div>
+            <% steps.forEach((step, i) => { %>
+                <div class="text-center" style="z-index:2;flex:1;">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width:42px;height:42px;<%= i <= currentIdx ? 'background:#6f42c1;color:#fff;box-shadow:0 2px 8px rgba(111,66,193,0.3);' : 'background:#e9ecef;color:#adb5bd;' %>">
+                        <i class="<%= step.icon %>"></i>
+                    </div>
+                    <div class="small <%= i <= currentIdx ? 'fw-bold text-dark' : 'text-muted' %>"><%= step.label %></div>
+                    <% if (i === currentIdx) { %>
+                        <div class="small text-muted mt-1" style="font-size:0.75rem;"><%= step.desc %></div>
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+<% } else { %>
+<div class="alert alert-danger mb-4">
+    <i class="fas fa-ban me-2"></i><strong>Đơn hàng đã bị hủy</strong>
+</div>
+<% } %>
+
+<div class="row">
+    <!-- Thong tin don hang -->
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-box me-2"></i>Sản phẩm đã đặt</h5>
+                <% if (donHang.trang_thai === 'cho_xac_nhan') { %>
+                    <span class="badge bg-warning text-dark fs-6"><i class="fas fa-clock me-1"></i>Chờ xác nhận</span>
+                <% } else if (donHang.trang_thai === 'da_xac_nhan') { %>
+                    <span class="badge bg-primary fs-6"><i class="fas fa-clipboard-check me-1"></i>Đã xác nhận</span>
+                <% } else if (donHang.trang_thai === 'dang_giao') { %>
+                    <span class="badge bg-info fs-6"><i class="fas fa-truck me-1"></i>Đang giao</span>
+                <% } else if (donHang.trang_thai === 'da_giao') { %>
+                    <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>Đã giao</span>
+                <% } else if (donHang.trang_thai === 'da_huy') { %>
+                    <span class="badge bg-danger fs-6"><i class="fas fa-times me-1"></i>Đã hủy</span>
+                <% } %>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70px;">Hình</th>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Đơn giá</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% chiTiet.forEach(ct => { %>
+                                <tr>
+                                    <td>
+                                        <% if (ct.hinh_anh) { %>
+                                            <img src="<%= ct.hinh_anh %>" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <% } else { %>
+                                            <img src="/images/no-image.svg" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold"><%= ct.ten_sp %></span>
+                                        <% if (ct.ma_sp) { %><br><small class="text-muted">Mã: <%= ct.ma_sp %></small><% } %>
+                                    </td>
+                                    <td class="text-center"><%= Number(ct.don_gia).toLocaleString('vi-VN') %>đ</td>
+                                    <td class="text-center"><%= ct.so_luong %></td>
+                                    <td class="text-end fw-semibold"><%= Number(ct.thanh_tien).toLocaleString('vi-VN') %>đ</td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tong ket -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Tổng kết</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tạm tính:</span>
+                    <span><%= Number(donHang.tong_tien).toLocaleString('vi-VN') %>đ</span>
+                </div>
+                <% if (donHang.giam_gia > 0) { %>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Giảm giá:</span>
+                        <span class="text-success">-<%= Number(donHang.giam_gia).toLocaleString('vi-VN') %>đ</span>
+                    </div>
+                <% } %>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Phí vận chuyển:</span>
+                    <span class="text-success">Miễn phí</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold fs-5">Tổng cộng:</span>
+                    <span class="fw-bold fs-5 text-danger"><%= Number(donHang.thanh_toan).toLocaleString('vi-VN') %>đ</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="fas fa-calendar me-2 text-muted"></i>Ngày đặt: <strong><%= new Date(donHang.ngay_dat).toLocaleDateString('vi-VN') %></strong></li>
+                    <li class="mb-2"><i class="fas fa-money-bill me-2 text-muted"></i>Thanh toán: <strong>
+                        <% if (donHang.phuong_thuc_tt === 'tien_mat') { %>COD
+                        <% } else if (donHang.phuong_thuc_tt === 'chuyen_khoan') { %>Chuyển khoản
+                        <% } else { %>Thẻ<% } %>
+                    </strong></li>
+                    <% if (donHang.ghi_chu) { %>
+                        <li class="mb-0"><i class="fas fa-sticky-note me-2 text-muted"></i>Ghi chú: <%= donHang.ghi_chu %></li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+
+        <% if (donHang.trang_thai === 'cho_xac_nhan') { %>
+            <form action="/don-hang-cua-toi/huy/<%= donHang.id %>" method="POST" class="mt-3" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                <button type="submit" class="btn btn-outline-danger w-100"><i class="fas fa-times me-2"></i>Hủy đơn hàng</button>
+            </form>
+        <% } %>
+    </div>
+</div>

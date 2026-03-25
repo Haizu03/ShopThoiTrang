@@ -1,0 +1,293 @@
+<div class="search-section mb-4">
+    <h5 class="mb-3"><i class="fas fa-search me-2"></i>Tìm kiếm</h5>
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label">Từ khóa</label>
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="Nhập từ khóa tìm kiếm ..." value="<%= keyword %>" autofocus>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Phạm vi</label>
+            <select name="loai" class="form-select form-select-lg">
+                <option value="tat_ca" <%= loai === 'tat_ca' ? 'selected' : '' %>>Tất cả</option>
+                <option value="san_pham" <%= loai === 'san_pham' ? 'selected' : '' %>>Sản phẩm</option>
+                <option value="don_hang" <%= loai === 'don_hang' ? 'selected' : '' %>>Đơn hàng</option>
+                <option value="khach_hang" <%= loai === 'khach_hang' ? 'selected' : '' %>>Khách hàng</option>
+                <option value="tai_khoan" <%= loai === 'tai_khoan' ? 'selected' : '' %>>Tài khoản</option>
+                <option value="nhan_vien" <%= loai === 'nhan_vien' ? 'selected' : '' %>>Nhân viên</option>
+                <option value="danh_muc" <%= loai === 'danh_muc' ? 'selected' : '' %>>Danh mục</option>
+                <option value="ma_giam_gia" <%= loai === 'ma_giam_gia' ? 'selected' : '' %>>Mã giảm giá</option>
+                <option value="lien_he" <%= loai === 'lien_he' ? 'selected' : '' %>>Liên hệ</option>
+                <option value="phieu_nhap" <%= loai === 'phieu_nhap' ? 'selected' : '' %>>Phiếu nhập</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-search me-1"></i>Tìm</button>
+        </div>
+    </form>
+</div>
+
+<% if (keyword) { %>
+    <%
+        const totalResults = sanPhams.length + donHangs.length + khachHangs.length + nhanViens.length + danhMucs.length + taiKhoans.length + maGiamGias.length + lienHes.length + phieuNhaps.length;
+    %>
+    <div class="alert alert-info mb-3">
+        <i class="fas fa-info-circle me-1"></i> 
+        Tìm thấy <strong><%= totalResults %></strong> kết quả cho "<strong><%= keyword %></strong>"
+        <% if (loai !== 'tat_ca') { %> trong phạm vi <strong><%= loai.replace('_', ' ') %></strong><% } %>
+    </div>
+
+    <!-- Sản phẩm -->
+    <% if (sanPhams.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-box text-primary me-2"></i>Sản phẩm (<%= sanPhams.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Mã</th><th>Tên SP</th><th>Danh mục</th><th>Giới tính</th><th>Giá bán</th><th>Tồn kho</th><th></th></tr></thead>
+                    <tbody>
+                        <% sanPhams.forEach(sp => { %>
+                            <tr>
+                                <td><code><%= sp.ma_sp %></code></td>
+                                <td><%= sp.ten_sp %></td>
+                                <td><%= sp.ten_danh_muc || '---' %></td>
+                                <td>
+                                    <% if (sp.gioi_tinh === 'Nam') { %><span class="badge bg-primary">Nam</span>
+                                    <% } else if (sp.gioi_tinh === 'Nữ') { %><span class="badge bg-danger">Nữ</span>
+                                    <% } else { %><span class="badge bg-secondary">Unisex</span><% } %>
+                                </td>
+                                <td class="text-danger fw-bold"><%= Number(sp.gia_ban).toLocaleString('vi-VN') %>đ</td>
+                                <td><%= sp.so_luong %></td>
+                                <td><a href="/san-pham/<%= sp.id %>" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Đơn hàng -->
+    <% if (donHangs.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-shopping-cart text-success me-2"></i>Đơn hàng (<%= donHangs.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Mã ĐH</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th><th></th></tr></thead>
+                    <tbody>
+                        <% donHangs.forEach(dh => { %>
+                            <tr>
+                                <td><code><%= dh.ma_dh %></code></td>
+                                <td><%= dh.ten_khach || 'Khách lẻ' %></td>
+                                <td class="text-danger fw-bold"><%= Number(dh.tong_tien).toLocaleString('vi-VN') %>đ</td>
+                                <td>
+                                    <% if (dh.trang_thai === 'cho_xac_nhan') { %><span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    <% } else if (dh.trang_thai === 'da_xac_nhan') { %><span class="badge bg-primary">Đã xác nhận</span>
+                                    <% } else if (dh.trang_thai === 'dang_giao') { %><span class="badge bg-info">Đang giao</span>
+                                    <% } else if (dh.trang_thai === 'da_giao') { %><span class="badge bg-success">Đã giao</span>
+                                    <% } else { %><span class="badge bg-danger">Đã hủy</span><% } %>
+                                </td>
+                                <td><%= new Date(dh.ngay_dat || dh.ngay_tao).toLocaleDateString('vi-VN') %></td>
+                                <td><a href="/don-hang/<%= dh.id %>" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Khách hàng -->
+    <% if (khachHangs.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-users text-warning me-2"></i>Khách hàng (<%= khachHangs.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Họ tên</th><th>SĐT</th><th>Email</th><th>Địa chỉ</th><th></th></tr></thead>
+                    <tbody>
+                        <% khachHangs.forEach(kh => { %>
+                            <tr>
+                                <td><%= kh.ho_ten %></td>
+                                <td><%= kh.so_dien_thoai || '---' %></td>
+                                <td><%= kh.email || '---' %></td>
+                                <td><%= kh.dia_chi || '---' %></td>
+                                <td><a href="/khach-hang/sua/<%= kh.id %>" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Tài khoản -->
+    <% if (taiKhoans.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-user-shield text-info me-2"></i>Tài khoản (<%= taiKhoans.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Tên đăng nhập</th><th>Họ tên</th><th>Vai trò</th><th>Email</th><th>SĐT</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <% taiKhoans.forEach(tk => { %>
+                            <tr>
+                                <td><code><%= tk.ten_dang_nhap %></code></td>
+                                <td><%= tk.ho_ten %></td>
+                                <td>
+                                    <% if (tk.vai_tro === 'admin') { %><span class="badge bg-danger">Admin</span>
+                                    <% } else if (tk.vai_tro === 'nhanvien') { %><span class="badge bg-info">Nhân viên</span>
+                                    <% } else { %><span class="badge bg-secondary">Người dùng</span><% } %>
+                                </td>
+                                <td><%= tk.email || '---' %></td>
+                                <td><%= tk.so_dien_thoai || '---' %></td>
+                                <td>
+                                    <% if (tk.trang_thai) { %><span class="badge bg-success">Hoạt động</span>
+                                    <% } else { %><span class="badge bg-secondary">Khóa</span><% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Nhân viên -->
+    <% if (nhanViens.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-id-badge text-secondary me-2"></i>Nhân viên (<%= nhanViens.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Mã NV</th><th>Họ tên</th><th>Chức vụ</th><th>SĐT</th><th>Trạng thái</th><th></th></tr></thead>
+                    <tbody>
+                        <% nhanViens.forEach(nv => { %>
+                            <tr>
+                                <td><code><%= nv.ma_nv %></code></td>
+                                <td><%= nv.ho_ten %></td>
+                                <td><%= nv.chuc_vu || '---' %></td>
+                                <td><%= nv.so_dien_thoai || '---' %></td>
+                                <td>
+                                    <% if (nv.trang_thai) { %><span class="badge bg-success">Đang làm</span>
+                                    <% } else { %><span class="badge bg-secondary">Nghỉ việc</span><% } %>
+                                </td>
+                                <td><a href="/nhan-vien/sua/<%= nv.id %>" class="btn btn-sm btn-outline-secondary"><i class="fas fa-edit"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Danh mục -->
+    <% if (danhMucs.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-tags text-purple me-2" style="color:#6c5ce7"></i>Danh mục (<%= danhMucs.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Tên danh mục</th><th>Mô tả</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <% danhMucs.forEach(dm => { %>
+                            <tr>
+                                <td><strong><%= dm.ten_danh_muc %></strong></td>
+                                <td><%= dm.mo_ta || '---' %></td>
+                                <td>
+                                    <% if (dm.trang_thai) { %><span class="badge bg-success">Hiện</span>
+                                    <% } else { %><span class="badge bg-secondary">Ẩn</span><% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Mã giảm giá -->
+    <% if (maGiamGias.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-ticket-alt text-danger me-2"></i>Mã giảm giá (<%= maGiamGias.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Mã code</th><th>Mô tả</th><th>Loại</th><th>Giá trị</th><th>Đã dùng</th><th>Trạng thái</th><th></th></tr></thead>
+                    <tbody>
+                        <% maGiamGias.forEach(mg => { %>
+                            <tr>
+                                <td><code class="text-danger fw-bold"><%= mg.ma_code %></code></td>
+                                <td><%= mg.mo_ta || '---' %></td>
+                                <td><%= mg.loai_giam === 'phan_tram' ? 'Phần trăm' : 'Cố định' %></td>
+                                <td><%= mg.loai_giam === 'phan_tram' ? mg.gia_tri + '%' : Number(mg.gia_tri).toLocaleString('vi-VN') + 'đ' %></td>
+                                <td><%= mg.da_su_dung %>/<%= mg.so_luong %></td>
+                                <td>
+                                    <% if (mg.trang_thai) { %><span class="badge bg-success">Hoạt động</span>
+                                    <% } else { %><span class="badge bg-secondary">Tắt</span><% } %>
+                                </td>
+                                <td><a href="/ma-giam-gia/sua/<%= mg.id %>" class="btn btn-sm btn-outline-danger"><i class="fas fa-edit"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Liên hệ -->
+    <% if (lienHes.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-envelope text-success me-2"></i>Liên hệ (<%= lienHes.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Họ tên</th><th>Email</th><th>Chủ đề</th><th>Trạng thái</th><th>Ngày gửi</th><th></th></tr></thead>
+                    <tbody>
+                        <% lienHes.forEach(lh => { %>
+                            <tr>
+                                <td><%= lh.ho_ten %></td>
+                                <td><%= lh.email || '---' %></td>
+                                <td><%= lh.chu_de || '---' %></td>
+                                <td>
+                                    <% if (lh.trang_thai === 'da_phan_hoi') { %><span class="badge bg-success">Đã phản hồi</span>
+                                    <% } else { %><span class="badge bg-warning text-dark">Chờ xử lý</span><% } %>
+                                </td>
+                                <td><%= new Date(lh.ngay_gui).toLocaleDateString('vi-VN') %></td>
+                                <td><a href="/lien-he/<%= lh.id %>" class="btn btn-sm btn-outline-success"><i class="fas fa-eye"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Phiếu nhập -->
+    <% if (phieuNhaps.length > 0) { %>
+        <div class="table-container mb-4">
+            <h6><i class="fas fa-truck text-dark me-2"></i>Phiếu nhập (<%= phieuNhaps.length %> kết quả)</h6>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Mã phiếu</th><th>Nhà cung cấp</th><th>Nhân viên</th><th>Tổng tiền</th><th>Ngày nhập</th><th></th></tr></thead>
+                    <tbody>
+                        <% phieuNhaps.forEach(pn => { %>
+                            <tr>
+                                <td><code><%= pn.ma_phieu %></code></td>
+                                <td><%= pn.nha_cung_cap || '---' %></td>
+                                <td><%= pn.ten_nhan_vien || '---' %></td>
+                                <td class="text-danger fw-bold"><%= Number(pn.tong_tien).toLocaleString('vi-VN') %>đ</td>
+                                <td><%= new Date(pn.ngay_nhap || pn.ngay_tao).toLocaleDateString('vi-VN') %></td>
+                                <td><a href="/nhap-hang/<%= pn.id %>" class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (totalResults === 0) { %>
+        <div class="text-center text-muted py-5">
+            <i class="fas fa-search fa-3x mb-3"></i>
+            <p>Không tìm thấy kết quả cho "<strong><%= keyword %></strong>"</p>
+        </div>
+    <% } %>
+<% } else { %>
+    <div class="text-center text-muted py-5">
+        <i class="fas fa-search fa-3x mb-3"></i>
+        <p>Nhập từ khóa để bắt đầu tìm kiếm</p>
+    </div>
+<% } %>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn API & SQL - Shop Thời Trang</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { font-size: 1.1em; opacity: 0.9; }
+        section { background: white; padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 15px; font-size: 1.8em; }
+        h3 { color: #764ba2; margin-top: 20px; margin-bottom: 10px; font-size: 1.3em; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #d63384; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 6px; overflow-x: auto; margin: 15px 0; border-left: 4px solid #667eea; line-height: 1.4; }
+        .endpoint { background: #f9f9f9; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea; border-radius: 4px; }
+        .method { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-weight: bold; margin-bottom: 10px; }
+        .get { background: #61affe; }
+        .post { background: #49cc90; }
+        .put { background: #fca130; }
+        .delete { background: #f93e3e; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #667eea; color: white; font-weight: bold; }
+        tr:hover { background: #f5f5f5; }
+        .note { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px; margin: 15px 0; border-radius: 4px; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 4px; }
+        .success { background: #d4edda; border-left: 4px solid #28a745; padding: 12px; margin: 15px 0; border-radius: 4px; }
+        .code-example { background: #f4f4f4; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #764ba2; }
+        ul, ol { margin-left: 20px; margin-top: 10px; }
+        li { margin-bottom: 8px; }
+        .toc { background: #f0f0f0; padding: 20px; border-radius: 6px; margin-bottom: 30px; }
+        .toc h3 { color: #333; }
+        .toc ol { margin-left: 30px; }
+        .toc a { color: #667eea; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        footer { text-align: center; padding: 20px; color: #666; border-top: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Hướng dẫn API & SQL</h1>
+            <p class="subtitle">Shop Quản Lý Thời Trang — Node.js + Express.js + MSSQL</p>
+        </header>
+
+        <div class="toc">
+            <h3>📋 Mục lục</h3>
+            <ol>
+                <li><a href="#architecture">Kiến trúc hệ thống</a></li>
+                <li><a href="#database">Kết nối SQL Server</a></li>
+                <li><a href="#auth">API Xác thực</a></li>
+                <li><a href="#products">API Sản phẩm</a></li>
+                <li><a href="#orders">API Đơn hàng</a></li>
+                <li><a href="#users">API Người dùng</a></li>
+                <li><a href="#errors">Xử lý lỗi</a></li>
+            </ol>
+        </div>
+
+        <!-- ARCHITECTURE SECTION -->
+        <section id="architecture">
+            <h2>🏗️ Kiến trúc hệ thống</h2>
+            
+            <h3>Cấu trúc thư mục</h3>
+            <pre>ShopThoiTrang/
+├── app.js                 # Entry point
+├── config/
+│   └── database.js        # Cấu hình kết nối SQL
+├── routes/
+│   ├── auth.js           # Đăng nhập, đăng ký
+│   ├── sanPham.js        # Quản lý sản phẩm
+│   ├── donHang.js        # Quản lý đơn hàng
+│   ├── user.js           # API người dùng
+│   └── ...
+├── views/                # EJS templates
+├── public/               # CSS, JS, uploads
+└── database/
+    └── schema.sql        # Cơ sở dữ liệu</pre>
+
+            <h3>Công nghệ sử dụng</h3>
+            <table>
+                <tr>
+                    <th>Layer</th>
+                    <th>Công nghệ</th>
+                    <th>Phiên bản</th>
+                </tr>
+                <tr>
+                    <td>Runtime</td>
+                    <td>Node.js</td>
+                    <td>v24.x</td>
+                </tr>
+                <tr>
+                    <td>Backend Framework</td>
+                    <td>Express.js</td>
+                    <td>4.18.2</td>
+                </tr>
+                <tr>
+                    <td>Database Driver</td>
+                    <td>mssql/msnodesqlv8</td>
+                    <td>Latest</td>
+                </tr>
+                <tr>
+                    <td>Database Server</td>
+                    <td>MSSQL 2022 / LocalDB</td>
+                    <td>2022 Developer</td>
+                </tr>
+                <tr>
+                    <td>Template Engine</td>
+                    <td>EJS</td>
+                    <td>3.x</td>
+                </tr>
+                <tr>
+                    <td>Authentication</td>
+                    <td>bcryptjs + express-session</td>
+                    <td>Latest</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- DATABASE SECTION -->
+        <section id="database">
+            <h2>🗄️ Kết nối SQL Server</h2>
+
+            <h3>File: config/database.js</h3>
+            <div class="code-example">
+                <pre>const sql = require('mssql/msnodesqlv8');
+
+const config = {
+    connectionString: 'Driver={ODBC Driver 18 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=shop_thoi_trang;Trusted_Connection=yes;TrustServerCertificate=yes;'
+};
+
+let pool;
+
+async function getPool() {
+    if (!pool) {
+        pool = await new sql.ConnectionPool(config).connect();
+        console.log('Ket noi SQL Server thanh cong!');
+    }
+    return pool;
+}
+
+module.exports = { sql, getPool };</pre>
+            </div>
+
+            <h3>Tham số kết nối</h3>
+            <table>
+                <tr>
+                    <th>Tham số</th>
+                    <th>Giá trị</th>
+                    <th>Mô tả</th>
+                </tr>
+                <tr>
+                    <td><code>Server</code></td>
+                    <td><code>(localdb)\MSSQLLocalDB</code></td>
+                    <td>Local database (máy dev). Thay bằng IP/hostname cho production</td>
+                </tr>
+                <tr>
+                    <td><code>Database</code></td>
+                    <td><code>shop_thoi_trang</code></td>
+                    <td>Tên database</td>
+                </tr>
+                <tr>
+                    <td><code>Trusted_Connection</code></td>
+                    <td><code>yes</code></td>
+                    <td>Sử dụng Windows Authentication (không cần username/password)</td>
+                </tr>
+                <tr>
+                    <td><code>TrustServerCertificate</code></td>
+                    <td><code>yes</code></td>
+                    <td>Bỏ qua SSL certificate validation</td>
+                </tr>
+            </table>
+
+            <div class="note">
+                <strong>💡 Ghi chú:</strong> ConnectionPool tự động cache kết nối. Chỉ tạo 1 pool duy nhất trong ứng dụng.
+            </div>
+
+            <h3>Cơ sở dữ liệu — 12 bảng chính</h3>
+            <table>
+                <tr>
+                    <th>Tên bảng</th>
+                    <th>Mục đích</th>
+                    <th>Cột chính</th>
+                </tr>
+                <tr>
+                    <td><code>tai_khoan</code></td>
+                    <td>Người dùng hệ thống</td>
+                    <td>id, ten_dang_nhap, mat_khau, vai_tro (admin/nhanvien/nguoidung)</td>
+                </tr>
+                <tr>
+                    <td><code>san_pham</code></td>
+                    <td>Sản phẩm</td>
+                    <td>id, ma_sp, ten_sp, gia_ban, so_luong, danh_muc_id</td>
+                </tr>
+                <tr>
+                    <td><code>don_hang</code></td>
+                    <td>Đơn hàng</td>
+                    <td>id, ma_dh, khach_hang_id, tai_khoan_id, tong_tien, trang_thai</td>
+                </tr>
+                <tr>
+                    <td><code>chi_tiet_don_hang</code></td>
+                    <td>Chi tiết đơn hàng</td>
+                    <td>id, don_hang_id, san_pham_id, so_luong, don_gia</td>
+                </tr>
+                <tr>
+                    <td><code>khach_hang</code></td>
+                    <td>Khách hàng</td>
+                    <td>id, ho_ten, so_dien_thoai, email, dia_chi</td>
+                </tr>
+                <tr>
+                    <td><code>nhan_vien</code></td>
+                    <td>Nhân viên</td>
+                    <td>id, ma_nv, ho_ten, chuc_vu, luong, tai_khoan_id</td>
+                </tr>
+                <tr>
+                    <td><code>danh_muc</code></td>
+                    <td>Danh mục sản phẩm</td>
+                    <td>id, ten_danh_muc, mo_ta</td>
+                </tr>
+                <tr>
+                    <td><code>ma_giam_gia</code></td>
+                    <td>Mã giảm giá</td>
+                    <td>id, ma_code, gia_tri, loai_giam, da_su_dung</td>
+                </tr>
+                <tr>
+                    <td><code>phieu_nhap</code></td>
+                    <td>Phiếu nhập hàng</td>
+                    <td>id, ma_phieu, nhan_vien_id, tong_tien</td>
+                </tr>
+                <tr>
+                    <td><code>chi_tiet_phieu_nhap</code></td>
+                    <td>Chi tiết phiếu nhập</td>
+                    <td>id, phieu_nhap_id, san_pham_id, so_luong</td>
+                </tr>
+                <tr>
+                    <td><code>cai_dat</code></td>
+                    <td>Cài đặt hệ thống</td>
+                    <td>id, khoa, gia_tri</td>
+                </tr>
+                <tr>
+                    <td><code>lien_he</code></td>
+                    <td>Liên hệ, feedback</td>
+                    <td>id, tai_khoan_id, ho_ten, chu_de, noi_dung, trang_thai</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- AUTH API SECTION -->
+        <section id="auth">
+            <h2>🔐 API Xác thực (routes/auth.js)</h2>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/dang-nhap</code>
+                <p><strong>Mô tả:</strong> Đăng nhập tài khoản</p>
+                <p><strong>Body:</strong></p>
+                <pre>{ "ten_dang_nhap": "Lan123", "mat_khau": "Lan123" }</pre>
+                <p><strong>Response:</strong> Redirect đến `/dashboard` (admin) hoặc `/trang-chu` (user)</p>
+                <p><strong>Session:</strong> Lưu <code>req.session.user</code> = {id, ten_dang_nhap, ho_ten, vai_tro}</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/dang-ky</code>
+                <p><strong>Mô tả:</strong> Đăng ký tài khoản mới (vai_tro = 'nguoidung')</p>
+                <p><strong>Body:</strong></p>
+                <pre>{ "ho_ten": "Nguyễn Văn A", "ten_dang_nhap": "nguyena", "mat_khau": "123456", "xac_nhan": "123456" }</pre>
+                <p><strong>Validation:</strong> Mật khẩu ≥ 6 ký tự, khớp xác nhận, tên đăng nhập chưa tồn tại</p>
+                <p><strong>Password Hash:</strong> bcryptjs salt=10</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/dang-xuat</code>
+                <p><strong>Mô tả:</strong> Đăng xuất</p>
+                <p><strong>Action:</strong> Xoá session, redirect `/dang-nhap`</p>
+            </div>
+
+            <div class="code-example">
+                <strong>Code Query (routes/auth.js):</strong>
+                <pre>const result = await pool.request()
+    .input('ten_dang_nhap', sql.NVarChar, ten_dang_nhap)
+    .query('SELECT * FROM tai_khoan WHERE ten_dang_nhap = @ten_dang_nhap AND trang_thai = 1');
+
+const user = result.recordset[0];
+const isMatch = await bcrypt.compare(mat_khau, user.mat_khau);</pre>
+            </div>
+        </section>
+
+        <!-- PRODUCTS API SECTION -->
+        <section id="products">
+            <h2>📦 API Sản phẩm (routes/sanPham.js)</h2>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/san-pham</code>
+                <p><strong>Mô tả:</strong> Danh sách sản phẩm (admin only)</p>
+                <p><strong>Query Params:</strong> <code>page=1&loai=all&search=</code></p>
+                <p><strong>Render:</strong> views/san-pham/index.ejs</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/san-pham/tao</code>
+                <p><strong>Mô tả:</strong> Form tạo sản phẩm mới</p>
+                <p><strong>Render:</strong> views/san-pham/form.ejs</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/san-pham/tao</code>
+                <p><strong>Mô tả:</strong> Thêm sản phẩm mới (admin only, upload hình ảnh)</p>
+                <p><strong>Body (FormData):</strong></p>
+                <pre>ma_sp: "SP001"
+ten_sp: "Áo thun cotton"
+danh_muc_id: 1
+gia_nhap: 80000
+gia_ban: 150000
+so_luong: 50
+kich_thuoc: "M"
+mau_sac: "Trắng"
+chat_lieu: "Cotton 100%"
+mo_ta: "Mô tả sản phẩm..."
+hinh_anh: [File]</pre>
+                <p><strong>Upload:</strong> Multer → public/uploads/</p>
+            </div>
+
+            <div class="code-example">
+                <strong>SQL Query:</strong>
+                <pre>INSERT INTO san_pham (ma_sp, ten_sp, danh_muc_id, gia_nhap, gia_ban, so_luong, kich_thuoc, mau_sac, chat_lieu, hinh_anh, mo_ta)
+VALUES (@ma_sp, @ten_sp, @danh_muc_id, @gia_nhap, @gia_ban, @so_luong, @kich_thuoc, @mau_sac, @chat_lieu, @hinh_anh, @mo_ta)</pre>
+            </div>
+        </section>
+
+        <!-- ORDERS API SECTION -->
+        <section id="orders">
+            <h2>🛒 API Đơn hàng (routes/donHang.js, routes/user.js)</h2>
+
+            <h3>Admin quản lý đơn hàng</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/don-hang</code>
+                <p><strong>Mô tả:</strong> Danh sách đơn hàng (admin only)</p>
+                <p><strong>Render:</strong> views/don-hang/index.ejs</p>
+            </div>
+
+            <h3>User đặt hàng</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/dat-hang</code>
+                <p><strong>Mô tả:</strong> Tạo đơn hàng mới (user đã đăng nhập)</p>
+                <p><strong>Body:</strong></p>
+                <pre>{
+  "ho_ten": "Nguyễn Văn A",
+  "so_dien_thoai": "0901234567",
+  "email": "a@gmail.com",
+  "dia_chi": "123 Nguyễn Huệ, Q.1, TP.HCM",
+  "ghi_chu": "Ghi chú...",
+  "phuong_thuc_tt": "tien_mat",
+  "ma_giam_gia_id": 1,
+  "cart_items": [
+    { "san_pham_id": 1, "so_luong": 2 }
+  ]
+}</pre>
+                <p><strong>Logic:</strong></p>
+                <ul>
+                    <li>Validate mã giảm giá (nếu có)</li>
+                    <li>Tạo khách hàng nếu chưa tồn tại</li>
+                    <li>Tạo đơn hàng + chi tiết (transaction)</li>
+                    <li>Cập nhật tồn kho sản phẩm</li>
+                    <li>Xoá giỏ hàng session</li>
+                </ul>
+            </div>
+
+            <div class="code-example">
+                <strong>SQL Transactions (routes/user.js):</strong>
+                <pre>const transaction = new sql.Transaction(pool);
+await transaction.begin();
+
+// Tạo đơn hàng
+const insertDH = await new sql.Request(transaction)
+    .input('ma_dh', sql.NVarChar, maDH)
+    .input('khach_hang_id', sql.Int, khachHangId)
+    .input('tai_khoan_id', sql.Int, req.session.user.id)
+    .query(`INSERT INTO don_hang (ma_dh, khach_hang_id, tai_khoan_id, tong_tien, giam_gia, thanh_toan, phuong_thuc_tt)
+        OUTPUT INSERTED.id VALUES (...)`);
+
+// Thêm chi tiết
+for (const item of chiTietItems) {
+    await new sql.Request(transaction)
+        .query('INSERT INTO chi_tiet_don_hang (...) VALUES (...)');
+    
+    // Cập nhật tồn kho
+    await new sql.Request(transaction)
+        .query('UPDATE san_pham SET so_luong = so_luong - @so_luong WHERE id = @id');
+}
+
+await transaction.commit();</pre>
+            </div>
+        </section>
+
+        <!-- USER API SECTION -->
+        <section id="users">
+            <h2>👤 API Người dùng (routes/user.js)</h2>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/trang-chu</code>
+                <p><strong>Mô tả:</strong> Trang chủ người dùng (danh mục + sản phẩm mới)</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/them-vao-gio</code>
+                <p><strong>Mô tả:</strong> Thêm sản phẩm vào giỏ hàng (API)</p>
+                <p><strong>Body:</strong></p>
+                <pre>{ "san_pham_id": 1, "so_luong": 2 }</pre>
+                <p><strong>Response:</strong> JSON {success: true, message: "...", cart: []}</p>
+                <p><strong>Storage:</strong> <code>req.session.cart</code></p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/kiem-tra-ma-giam-gia</code>
+                <p><strong>Mô tả:</strong> Kiểm tra mã giảm giá (API)</p>
+                <p><strong>Body:</strong></p>
+                <pre>{ "ma_code": "GIAM50", "tong_tien": 500000 }</pre>
+                <p><strong>Response:</strong></p>
+                <pre>{ "success": true, "id": 1, "loai_giam": "phan_tram", "gia_tri": 50, "giam_gia": 250000 }</pre>
+                <p><strong>Validation:</strong> Kiểm tra đơn tối thiểu, số lượng, hạn sử dụng</p>
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/don-hang-cua-toi</code>
+                <p><strong>Mô tả:</strong> Danh sách đơn hàng của người dùng</p>
+                <p><strong>Query:</strong></p>
+                <pre>SELECT * FROM don_hang WHERE tai_khoan_id = @tai_khoan_id ORDER BY ngay_tao DESC</pre>
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/thong-tin</code>
+                <p><strong>Mô tả:</strong> Cập nhật thông tin cá nhân (name, email, phone, address, avatar)</p>
+                <p><strong>Upload:</strong> Multer avatar → public/uploads/avatar-[id]-[timestamp].jpg</p>
+            </div>
+        </section>
+
+        <!-- ERROR HANDLING SECTION -->
+        <section id="errors">
+            <h2>⚠️ Xử lý lỗi</h2>
+
+            <h3>Middleware xử lý lỗi (app.js)</h3>
+            <div class="code-example">
+                <pre>app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).send('Có lỗi xảy ra trên server');
+});</pre>
+            </div>
+
+            <h3>Lỗi SQL phổ biến</h3>
+            <table>
+                <tr>
+                    <th>Lỗi</th>
+                    <th>Nguyên nhân</th>
+                    <th>Sửa</th>
+                </tr>
+                <tr>
+                    <td><code>ConnectionError: connect ECONNREFUSED</code></td>
+                    <td>Không kết nối được SQL Server</td>
+                    <td>Kiểm tra server đang chạy: <code>sqllocaldb start MSSQLLocalDB</code></td>
+                </tr>
+                <tr>
+                    <td><code>Unique constraint violation</code></td>
+                    <td>Dữ liệu bị trùng lặp</td>
+                    <td>Check tên đăng nhập, mã sản phẩm, mã đơn hàng</td>
+                </tr>
+                <tr>
+                    <td><code>Foreign key constraint violation</code></td>
+                    <td>ID tham chiếu không tồn tại</td>
+                    <td>Kiểm tra danh_muc_id, khach_hang_id, san_pham_id có tồn tại</td>
+                </tr>
+                <tr>
+                    <td><code>Timeout or connection lost</code></td>
+                    <td>Truy vấn quá chậm hoặc server ngắt kết nối</td>
+                    <td>Thêm index, optimize query, tăng timeout</td>
+                </tr>
+            </table>
+
+            <div class="warning">
+                <strong>⚠️ Cảnh báo:</strong> Tất cả các route đều sử dụng <strong>parameterized queries</strong> để tránh SQL injection:
+                <pre>pool.request()
+    .input('ten_dang_nhap', sql.NVarChar, userInput)
+    .query('SELECT * FROM tai_khoan WHERE ten_dang_nhap = @ten_dang_nhap')</pre>
+                Đừng bao giờ dùng string concatenation!
+            </div>
+
+            <div class="success">
+                <strong>✅ Best Practices:</strong>
+                <ul>
+                    <li>Sử dụng parameterized queries cho mọi SQL statement</li>
+                    <li>Validate input dữ liệu trước khi insert/update</li>
+                    <li>Xử lý lỗi try-catch trong mọi async function</li>
+                    <li>Log lỗi chi tiết cho debugging</li>
+                    <li>Sử dụng transactions cho các hoạt động multi-step</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Shop Thời Trang — Đồ án Cơ sở Ngành CNTT</p>
+            <p>Tài liệu hướng dẫn phát triển | <strong>Last Updated: 22/03/2026</strong></p>
+        </footer>
+    </div>
+</body>
+</html>

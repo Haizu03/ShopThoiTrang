@@ -1,0 +1,21 @@
+<header class="top-header">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h5 class="mb-0 ms-2"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Tổng quan' %></h5>
+    </div>
+    <div class="header-right">
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i>
+                <%= typeof user !== 'undefined' && user ? user.ho_ten : '' %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/doi-mat-khau"><i class="fas fa-key me-2"></i>Đổi mật khẩu</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="/dang-xuat"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
